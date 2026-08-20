@@ -2,32 +2,32 @@
 
 @theme inline {
   /* ── Colors ── */
-  --color-background:     #0d0f1a;
-  --color-surface:        #151827;
+  --color-background: #0d0f1a;
+  --color-surface: #151827;
   --color-surface-raised: #1c2035;
-  --color-border:         #252a40;
-  --color-border-subtle:  #1e2235;
+  --color-border: #252a40;
+  --color-border-subtle: #1e2235;
 
-  --color-primary:        #7c6cfc;
-  --color-primary-hover:  #9080ff;
-  --color-primary-glow:   rgba(124, 108, 252, 0.25);
+  --color-primary: #7c6cfc;
+  --color-primary-hover: #9080ff;
+  --color-primary-glow: rgba(124, 108, 252, 0.25);
 
-  --color-accent:         #a78bfa;
-  --color-accent-soft:    rgba(167, 139, 250, 0.12);
+  --color-accent: #a78bfa;
+  --color-accent-soft: rgba(167, 139, 250, 0.12);
 
-  --color-text-primary:   #eef0f7;
+  --color-text-primary: #eef0f7;
   --color-text-secondary: #8b92b0;
-  --color-text-muted:     #555d7a;
+  --color-text-muted: #555d7a;
 
-  --color-success:        #34d399;
-  --color-error:          #f87171;
-  --color-warning:        #fbbf24;
+  --color-success: #34d399;
+  --color-error: #f87171;
+  --color-warning: #fbbf24;
 
   /* ── Radius ── */
-  --radius-sm:   6px;
-  --radius-md:   10px;
-  --radius-lg:   16px;
-  --radius-xl:   24px;
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 24px;
   --radius-full: 9999px;
 }
 
@@ -37,7 +37,9 @@
   padding: 0;
 }
 
-html { color-scheme: dark; }
+html {
+  color-scheme: dark;
+}
 
 body {
   background-color: var(--color-background);
@@ -47,14 +49,30 @@ body {
 }
 
 /* Scrollbar */
-::-webkit-scrollbar       { width: 6px; }
-::-webkit-scrollbar-track { background: var(--color-background); }
-::-webkit-scrollbar-thumb { background: var(--color-border); border-radius: var(--radius-full); }
-::-webkit-scrollbar-thumb:hover { background: var(--color-text-muted); }
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-background);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: var(--radius-full);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-text-muted);
+}
 
 /* Touchee signature — breathing pulse on mood elements */
 @keyframes mood-pulse {
-  0%, 100% { box-shadow: 0 0 0 0 var(--color-primary-glow); }
-  50%       { box-shadow: 0 0 0 8px transparent; }
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 var(--color-primary-glow);
+  }
+  50% {
+    box-shadow: 0 0 0 8px transparent;
+  }
 }
-.mood-pulse { animation: mood-pulse 2.4s ease-in-out infinite; }
+.mood-pulse {
+  animation: mood-pulse 2.4s ease-in-out infinite;
+}
