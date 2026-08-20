@@ -8,7 +8,7 @@ interface CardProps extends HTMLAttributes<HTMLDivElement> {
 const Card = ({ className, hover = false, ...props }: CardProps) => (
   <div
     className={cn(
-      "rounded-[var(--radius-xl)] p-6 transition-all duration-200",
+      "rounded-var(--radius-xl) p-6 transition-all duration-200",
       hover && "cursor-pointer",
       className,
     )}
