@@ -38,10 +38,10 @@ export default function LoginPage() {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-[var(--color-text-primary)] mb-1">
+        <h1 className="text-2xl font-bold text-var(--color-text-primary) mb-1">
           Welcome back
         </h1>
-        <p className="text-sm text-[var(--color-text-secondary)]">
+        <p className="text-sm text-var(--color-text-secondary)">
           Sign in to find your vibe
         </p>
       </div>
@@ -64,7 +64,7 @@ export default function LoginPage() {
 
         {/* Backend error (wrong password, user not found, etc.) */}
         {displayError && (
-          <div className="rounded-[var(--radius-md)] bg-[rgba(248,113,113,0.08)] border border-[rgba(248,113,113,0.2)] px-4 py-3 text-sm text-[var(--color-error)]">
+          <div className="rounded-var(--radius-md) bg-[rgba(248,113,113,0.08)] border border-[rgba(248,113,113,0.2)] px-4 py-3 text-sm text-var(--color-error)">
             {displayError}
           </div>
         )}
@@ -74,11 +74,11 @@ export default function LoginPage() {
         </Button>
       </form>
 
-      <p className="mt-6 text-center text-sm text-[var(--color-text-muted)]">
+      <p className="mt-6 text-center text-sm text-var(--color-text-muted)">
         No account?{" "}
         <Link
           href="/register"
-          className="text-[var(--color-accent)] hover:text-[var(--color-primary)] transition-colors"
+          className="text-var(--color-accent) hover:text-var(--color-primary) transition-colors"
         >
           Create one
         </Link>
