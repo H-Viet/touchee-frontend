@@ -1,25 +1,25 @@
 import { cn } from "@/lib/utils";
-import { type HTMLAttributes } from "react";
+import { type CSSProperties, type HTMLAttributes } from "react";
 
 interface CardProps extends HTMLAttributes<HTMLDivElement> {
   hover?: boolean;
 }
 
-const Card = ({ className, hover = false, ...props }: CardProps) => (
+const Card = ({ className, hover = false, style, ...props }: CardProps) => (
   <div
-    className={cn(
-      "rounded-var(--radius-xl) p-6 transition-all duration-200",
-      hover && "cursor-pointer",
-      className,
-    )}
-    style={{
-      background: "rgba(26, 21, 32, 0.8)",
-      border: "1px solid rgba(255, 61, 139, 0.15)",
-      backdropFilter: "blur(12px)",
-      boxShadow: hover
-        ? undefined
-        : "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05)",
-    }}
+    className={cn(hover && "card-hoverable", className)}
+    style={
+      {
+        borderRadius: "16px",
+        padding: "20px",
+        boxSizing: "border-box",
+        background: "rgba(26, 21, 32, 0.6)",
+        border: "1px solid rgba(255,255,255,0.08)",
+        backdropFilter: "blur(12px)",
+        transition: "all 0.2s ease",
+        ...style,
+      } as CSSProperties
+    }
     {...props}
   />
 );
@@ -29,13 +29,14 @@ const CardHeader = ({
   ...props
 }: HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn("mb-4 flex items-start justify-between gap-4", className)}
+    className={cn("flex items-start justify-between gap-4", className)}
+    style={{ marginBottom: "16px" }}
     {...props}
   />
 );
 
 const CardBody = ({ className, ...props }: HTMLAttributes<HTMLDivElement>) => (
-  <div className={cn("", className)} {...props} />
+  <div className={cn(className)} {...props} />
 );
 
 const CardFooter = ({
@@ -43,8 +44,12 @@ const CardFooter = ({
   ...props
 }: HTMLAttributes<HTMLDivElement>) => (
   <div
-    className={cn("mt-4 flex items-center gap-3 pt-4", className)}
-    style={{ borderTop: "1px solid rgba(255,255,255,0.06)" }}
+    className={cn("flex items-center gap-3", className)}
+    style={{
+      marginTop: "16px",
+      paddingTop: "16px",
+      borderTop: "1px solid rgba(255,255,255,0.06)",
+    }}
     {...props}
   />
 );
