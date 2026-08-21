@@ -42,16 +42,19 @@ export const mockPosts: Post[] = [
       "Just matched with someone who's also obsessed with lo-fi and rainy days 🌧️ Touchee really gets me.",
     authorId: "user-2",
     communityId: null,
+    mediaUrl: null,
+    mediaType: null,
     createdAt: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
     updatedAt: new Date(Date.now() - 1000 * 60 * 12).toISOString(),
     author: mockUsers[1],
   },
   {
     id: "post-2",
-    content:
-      "Anyone else feel like their mood completely shifts with the seasons? Autumn hits different this year.",
+    content: "Sunset from my rooftop today. Autumn hits different this year 🍂",
     authorId: "user-3",
     communityId: null,
+    mediaUrl: "https://picsum.photos/seed/touchee-sunset/800/500",
+    mediaType: "image",
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
     updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 2).toISOString(),
     author: mockUsers[2],
@@ -62,9 +65,41 @@ export const mockPosts: Post[] = [
       "Finally finished setting up my little reading corner. Golden lamp, cold coffee, warm playlist. This is peace.",
     authorId: "user-1",
     communityId: null,
+    mediaUrl: null,
+    mediaType: null,
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
     updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
     author: mockUsers[0],
+  },
+];
+
+export const mockJoinedCommunities: Community[] = [
+  {
+    id: "comm-1",
+    name: "Rainy Day Vibes",
+    slug: "rainy-day-vibes",
+    description: "For people who love the sound of rain",
+    type: "PUBLIC",
+    createdAt: new Date().toISOString(),
+    _count: { members: 1240, posts: 89 },
+  },
+  {
+    id: "comm-2",
+    name: "Night Owls",
+    slug: "night-owls",
+    description: "3am thoughts and late night energy",
+    type: "PUBLIC",
+    createdAt: new Date().toISOString(),
+    _count: { members: 682, posts: 45 },
+  },
+  {
+    id: "comm-3",
+    name: "Cozy Corner",
+    slug: "cozy-corner",
+    description: "Reading nooks, warm drinks, soft blankets",
+    type: "RESTRICTED",
+    createdAt: new Date().toISOString(),
+    _count: { members: 331, posts: 22 },
   },
 ];
 
