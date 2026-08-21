@@ -1,4 +1,4 @@
-import type { User, Post } from "@/types";
+import type { User, Post, Community } from "@/types";
 
 export const mockUsers: User[] = [
   {
@@ -65,5 +65,35 @@ export const mockPosts: Post[] = [
     createdAt: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
     updatedAt: new Date(Date.now() - 1000 * 60 * 60 * 5).toISOString(),
     author: mockUsers[0],
+  },
+];
+
+export const mockSuggestedCommunities: Community[] = [
+  {
+    id: "comm-4",
+    name: "Golden Hour",
+    slug: "golden-hour",
+    description: "Sunset chasers and photography lovers",
+    type: "PUBLIC",
+    createdAt: new Date().toISOString(),
+    _count: { members: 2103, posts: 156 },
+  },
+  {
+    id: "comm-5",
+    name: "Late Night Thoughts",
+    slug: "late-night-thoughts",
+    description: "For when the world is asleep and your mind isn't",
+    type: "PUBLIC",
+    createdAt: new Date().toISOString(),
+    _count: { members: 890, posts: 67 },
+  },
+  {
+    id: "comm-6",
+    name: "Slow Mornings",
+    slug: "slow-mornings",
+    description: "Coffee, journaling, and taking it easy",
+    type: "PUBLIC",
+    createdAt: new Date().toISOString(),
+    _count: { members: 1567, posts: 98 },
   },
 ];
