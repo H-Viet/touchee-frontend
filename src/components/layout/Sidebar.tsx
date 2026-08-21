@@ -1,87 +1,54 @@
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Users, User } from "lucide-react";
-import { mockCurrentUser } from "@/lib/mock/data";
-import { Avatar } from "../ui/Avatar";
+import { mockJoinedCommunities } from "@/lib/mock/data";
+import {
+  Home,
+  Flame,
+  Newspaper,
+  Compass,
+  Plus,
+  ChevronDown,
+  ChevronRight,
+} from "lucide-react";
 
-const navItems = [
-  { href: "/feed", icon: Home, label: "Feed" },
-  { href: "/communities", icon: Users, label: "Communities" },
-  { href: "/profile", icon: User, label: "Profile" },
+const mainNavItems = [
+  { href: "/", icon: Home, label: "Home" },
+  { href: "/popular", icon: Flame, label: "Popular" },
+  { href: "/news", icon: Newspaper, label: "News" },
+  { href: "/explore", icon: Compass, label: "Explore" },
 ];
 
 export const Sidebar = () => {
   const pathname = usePathname();
+  const [feedsOpen, setFeedsOpen] = useState(false);
+  const [communitiesOpen, setCommunitiesOpen] = useState(true);
 
   return (
     <aside
       style={{
         width: "260px",
-        minHeight: "100vh",
-        padding: "24px 16px",
+        flexShrink: 0,
+        padding: "20px 12px",
         boxSizing: "border-box",
         borderRight: "1px solid rgba(255,255,255,0.08)",
         background: "rgba(20, 16, 26, 0.6)",
         backdropFilter: "blur(12px)",
         position: "sticky",
-        top: 0,
+        top: "60px",
+        height: "calc(100vh - 60px)",
+        overflowY: "auto",
         display: "flex",
         flexDirection: "column",
       }}
     >
-      {/* Logo */}
-      <div
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "10px",
-          marginBottom: "32px",
-          padding: "0 8px",
-        }}
-      >
-        <div
-          className="mood-pulse"
-          style={{
-            height: "34px",
-            width: "34px",
-            borderRadius: "10px",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            background: "linear-gradient(135deg, #ff6b6b, #ff3d8b, #8b5cf6)",
-          }}
-        >
-          <span style={{ color: "white", fontWeight: 700, fontSize: "13px" }}>
-            T
-          </span>
-        </div>
-        <span
-          style={{
-            fontSize: "18px",
-            fontWeight: 700,
-            background: "linear-gradient(135deg, #ff6b6b, #ff3d8b, #8b5cf6)",
-            WebkitBackgroundClip: "text",
-            WebkitTextFillColor: "transparent",
-            backgroundClip: "text",
-          }}
-        >
-          Touchee
-        </span>
-      </div>
-
-      {/* Nav links */}
-      <nav
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          gap: "4px",
-          flex: 1,
-        }}
-      >
-        {navItems.map(({ href, icon: Icon, label }) => {
-          const active = pathname.startsWith(href);
+      {/* Main nav */}
+      <nav style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+        {mainNavItems.map(({ href, icon: Icon, label }) => {
+          const active =
+            href === "/" ? pathname === "/" : pathname.startsWith(href);
           return (
             <Link
               key={href}
@@ -107,48 +74,135 @@ export const Sidebar = () => {
         })}
       </nav>
 
-      {/* Mock user footer */}
-      <div
+      {/* Start a community */}
+      <Link
+        href="/communities"
         style={{
-          borderTop: "1px solid rgba(255,255,255,0.08)",
-          paddingTop: "16px",
-          marginTop: "16px",
+          display: "flex",
+          alignItems: "center",
+          gap: "12px",
+          borderRadius: "10px",
+          padding: "10px 12px",
+          marginTop: "8px",
+          fontSize: "14px",
+          fontWeight: 500,
+          textDecoration: "none",
+          color: "var(--color-text-secondary)",
         }}
       >
-        <div
+        <Plus size={18} />
+        Start a community
+      </Link>
+
+      <div
+        style={{
+          height: "1px",
+          background: "rgba(255,255,255,0.08)",
+          margin: "16px 8px",
+        }}
+      />
+
+      {/* Custom Feeds */}
+      <div>
+        <button
+          onClick={() => setFeedsOpen((v) => !v)}
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "10px",
-            padding: "0 8px",
+            gap: "6px",
+            width: "100%",
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: "8px 12px",
+            fontSize: "12px",
+            fontWeight: 700,
+            letterSpacing: "0.05em",
+            color: "var(--color-text-muted)",
+            textTransform: "uppercase",
           }}
         >
-          <Avatar fallback={mockCurrentUser.displayName} size="sm" pulse />
-          <div style={{ overflow: "hidden" }}>
-            <p
-              style={{
-                fontSize: "14px",
-                fontWeight: 600,
-                color: "var(--color-text-primary)",
-                margin: 0,
-                whiteSpace: "nowrap",
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-              }}
-            >
-              {mockCurrentUser.displayName}
-            </p>
-            <p
-              style={{
-                fontSize: "12px",
-                color: "var(--color-text-muted)",
-                margin: 0,
-              }}
-            >
-              @{mockCurrentUser.username}
-            </p>
+          {feedsOpen ? <ChevronDown size={14} /> : <ChevronRight size={14} />}
+          Custom Feeds
+        </button>
+        {feedsOpen && (
+          <p
+            style={{
+              padding: "4px 12px 12px 32px",
+              fontSize: "13px",
+              color: "var(--color-text-muted)",
+            }}
+          >
+            No custom feeds yet
+          </p>
+        )}
+      </div>
+
+      {/* Communities */}
+      <div>
+        <button
+          onClick={() => setCommunitiesOpen((v) => !v)}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+            width: "100%",
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            padding: "8px 12px",
+            fontSize: "12px",
+            fontWeight: 700,
+            letterSpacing: "0.05em",
+            color: "var(--color-text-muted)",
+            textTransform: "uppercase",
+          }}
+        >
+          {communitiesOpen ? (
+            <ChevronDown size={14} />
+          ) : (
+            <ChevronRight size={14} />
+          )}
+          Communities
+        </button>
+        {communitiesOpen && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "2px" }}>
+            {mockJoinedCommunities.map((c) => (
+              <Link
+                key={c.id}
+                href={`/communities/${c.slug}`}
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                  padding: "8px 12px 8px 32px",
+                  fontSize: "13px",
+                  color: "var(--color-text-secondary)",
+                  textDecoration: "none",
+                }}
+              >
+                <div
+                  style={{
+                    height: "20px",
+                    width: "20px",
+                    borderRadius: "6px",
+                    flexShrink: 0,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    fontSize: "10px",
+                    fontWeight: 700,
+                    color: "white",
+                    background: "linear-gradient(135deg, #ff6b6b, #8b5cf6)",
+                  }}
+                >
+                  {c.name[0]}
+                </div>
+                {c.name}
+              </Link>
+            ))}
           </div>
-        </div>
+        )}
       </div>
     </aside>
   );
