@@ -48,6 +48,8 @@ export interface Post {
   content: string;
   authorId: string;
   communityId: string | null;
+  mediaUrl: string | null;
+  mediaType: string | null;
   createdAt: string;
   updatedAt: string;
   author?: User;
@@ -55,6 +57,8 @@ export interface Post {
 
 export interface CreatePostDto {
   content: string;
+  mediaUrl: string | null;
+  mediaType: "image" | "video" | null;
   communityId?: string;
 }
 
