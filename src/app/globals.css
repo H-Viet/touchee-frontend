@@ -85,3 +85,14 @@ body {
 .mood-pulse {
   animation: mood-pulse 2.4s ease-in-out infinite;
 }
+
+/* ── Card hover effect ── */
+.card-hoverable {
+  cursor: pointer;
+}
+.card-hoverable:hover {
+  background: rgba(34, 26, 44, 0.85) !important;
+  border-color: rgba(255, 61, 139, 0.3) !important;
+  transform: translateY(-2px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+}
