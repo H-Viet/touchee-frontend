@@ -5,6 +5,7 @@ import { Trash2 } from "lucide-react";
 import { Card, CardHeader, CardBody } from "@/components/ui/Card";
 import { Avatar } from "@/components/ui/Avatar";
 import type { Post } from "@/types";
+import { useState, useEffect } from "react";
 
 interface PostCardProps {
   post: Post;
@@ -16,9 +17,13 @@ export const PostCard = ({ post, currentUserId, onDelete }: PostCardProps) => {
   const authorName = post.author?.displayName ?? "Unknown";
   const authorHandle = post.author?.username ?? "unknown";
   const isOwner = currentUserId === post.authorId;
-  const timeAgo = formatDistanceToNow(new Date(post.createdAt), {
-    addSuffix: true,
-  });
+  const [timeAgo, setTimeAgo] = useState<string>("");
+
+  useEffect(() => {
+    setTimeAgo(
+      formatDistanceToNow(new Date(post.createdAt), { addSuffix: true }),
+    );
+  }, [post.createdAt]);
 
   return (
     <Card hover>
@@ -78,6 +83,31 @@ export const PostCard = ({ post, currentUserId, onDelete }: PostCardProps) => {
         >
           {post.content}
         </p>
+
+        {post.mediaUrl && (
+          <div
+            style={{
+              marginTop: "12px",
+              borderRadius: "12px",
+              overflow: "hidden",
+            }}
+          >
+            {post.mediaType === "video" ? (
+              <video
+                src={post.mediaUrl}
+                controls
+                style={{ width: "100%", display: "block" }}
+              />
+            ) : (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={post.mediaUrl}
+                alt="Post media"
+                style={{ width: "100%", display: "block" }}
+              />
+            )}
+          </div>
+        )}
       </CardBody>
     </Card>
   );
