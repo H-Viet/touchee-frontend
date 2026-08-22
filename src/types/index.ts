@@ -49,7 +49,10 @@ export interface Post {
   authorId: string;
   communityId: string | null;
   mediaUrl: string | null;
-  mediaType: string | null;
+  mediaType: "image" | "video" | null;
+  upvotes: number;
+  downvotes: number;
+  commentCount: number;
   createdAt: string;
   updatedAt: string;
   author?: User;
@@ -57,9 +60,24 @@ export interface Post {
 
 export interface CreatePostDto {
   content: string;
-  mediaUrl: string | null;
-  mediaType: "image" | "video" | null;
   communityId?: string;
+  mediaUrl?: string;
+  mediaType?: "image" | "video";
+}
+
+// ─── Comments ────────────────────────────────────────────────────────────────
+
+export interface Comment {
+  id: string;
+  postId: string;
+  parentId: string | null;
+  authorId: string;
+  content: string;
+  createdAt: string;
+  upvotes: number;
+  downvotes: number;
+  author?: User;
+  replies?: Comment[];
 }
 
 // ─── Communities ─────────────────────────────────────────────────────────────
