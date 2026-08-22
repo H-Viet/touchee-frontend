@@ -9,7 +9,7 @@ export const mockUsers: User[] = [
     bio: "Building Touchee 🚀",
     avatarUrl: null,
     accScore: 87,
-    createdAt: new Date().toISOString(),
+    createdAt: "2025-11-03T00:00:00.000Z",
   },
   {
     id: "user-2",
@@ -19,7 +19,7 @@ export const mockUsers: User[] = [
     bio: "Chasing golden hour and good vibes ✨",
     avatarUrl: null,
     accScore: 92,
-    createdAt: new Date().toISOString(),
+    createdAt: "2025-09-14T00:00:00.000Z",
   },
   {
     id: "user-3",
@@ -29,7 +29,7 @@ export const mockUsers: User[] = [
     bio: null,
     avatarUrl: null,
     accScore: 74,
-    createdAt: new Date().toISOString(),
+    createdAt: "2025-12-01T00:00:00.000Z",
   },
 ];
 
