@@ -1,4 +1,4 @@
-import type { User, Post, Community } from "@/types";
+import type { User, Post, Community, Comment } from "@/types";
 
 export const mockUsers: User[] = [
   {
@@ -44,6 +44,9 @@ export const mockPosts: Post[] = [
     communityId: null,
     mediaUrl: null,
     mediaType: null,
+    upvotes: 24,
+    downvotes: 1,
+    commentCount: 2,
     createdAt: "2026-08-22T09:15:00.000Z",
     updatedAt: "2026-08-22T09:15:00.000Z",
     author: mockUsers[1],
@@ -56,6 +59,9 @@ export const mockPosts: Post[] = [
     communityId: null,
     mediaUrl: "/mock/sunset.svg",
     mediaType: "image",
+    upvotes: 156,
+    downvotes: 3,
+    commentCount: 1,
     createdAt: "2026-08-22T07:30:00.000Z",
     updatedAt: "2026-08-22T07:30:00.000Z",
     author: mockUsers[2],
@@ -68,9 +74,104 @@ export const mockPosts: Post[] = [
     communityId: null,
     mediaUrl: null,
     mediaType: null,
+    upvotes: 42,
+    downvotes: 0,
+    commentCount: 4,
     createdAt: "2026-08-22T04:45:00.000Z",
     updatedAt: "2026-08-22T04:45:00.000Z",
     author: mockUsers[0],
+  },
+];
+
+// Nested comment threads — `replies` holds children directly, so rendering
+// them is just a recursive walk, no tree-building logic needed.
+export const mockComments: Comment[] = [
+  {
+    id: "c5",
+    postId: "post-1",
+    parentId: null,
+    authorId: "user-3",
+    content: "That's the dream honestly, hope it goes somewhere 🌧️",
+    createdAt: "2026-08-22T09:20:00.000Z",
+    upvotes: 6,
+    downvotes: 0,
+    author: mockUsers[2],
+    replies: [
+      {
+        id: "c6",
+        postId: "post-1",
+        parentId: "c5",
+        authorId: "user-2",
+        content: "Fingers crossed! Will keep you all posted 🤞",
+        createdAt: "2026-08-22T09:25:00.000Z",
+        upvotes: 4,
+        downvotes: 0,
+        author: mockUsers[1],
+        replies: [],
+      },
+    ],
+  },
+  {
+    id: "c7",
+    postId: "post-2",
+    parentId: null,
+    authorId: "user-1",
+    content: "This view is unreal 😍 where's your rooftop at?",
+    createdAt: "2026-08-22T07:45:00.000Z",
+    upvotes: 15,
+    downvotes: 0,
+    author: mockUsers[0],
+    replies: [],
+  },
+  {
+    id: "c1",
+    postId: "post-3",
+    parentId: null,
+    authorId: "user-2",
+    content: "This sounds so peaceful. What are you reading?",
+    createdAt: "2026-08-22T05:00:00.000Z",
+    upvotes: 12,
+    downvotes: 0,
+    author: mockUsers[1],
+    replies: [
+      {
+        id: "c2",
+        postId: "post-3",
+        parentId: "c1",
+        authorId: "user-1",
+        content: "Currently on a mystery novel, perfect for this weather!",
+        createdAt: "2026-08-22T05:10:00.000Z",
+        upvotes: 5,
+        downvotes: 0,
+        author: mockUsers[0],
+        replies: [
+          {
+            id: "c3",
+            postId: "post-3",
+            parentId: "c2",
+            authorId: "user-2",
+            content: "Ooh which one? I need recommendations 👀",
+            createdAt: "2026-08-22T05:15:00.000Z",
+            upvotes: 3,
+            downvotes: 0,
+            author: mockUsers[1],
+            replies: [],
+          },
+        ],
+      },
+    ],
+  },
+  {
+    id: "c4",
+    postId: "post-3",
+    parentId: null,
+    authorId: "user-3",
+    content: "Golden lamp + cold coffee is such an underrated combo honestly.",
+    createdAt: "2026-08-22T06:00:00.000Z",
+    upvotes: 8,
+    downvotes: 1,
+    author: mockUsers[2],
+    replies: [],
   },
 ];
 
@@ -81,7 +182,7 @@ export const mockJoinedCommunities: Community[] = [
     slug: "rainy-day-vibes",
     description: "For people who love the sound of rain",
     type: "PUBLIC",
-    createdAt: new Date().toISOString(),
+    createdAt: "2025-10-01T00:00:00.000Z",
     _count: { members: 1240, posts: 89 },
   },
   {
@@ -90,7 +191,7 @@ export const mockJoinedCommunities: Community[] = [
     slug: "night-owls",
     description: "3am thoughts and late night energy",
     type: "PUBLIC",
-    createdAt: new Date().toISOString(),
+    createdAt: "2025-10-01T00:00:00.000Z",
     _count: { members: 682, posts: 45 },
   },
   {
@@ -99,7 +200,7 @@ export const mockJoinedCommunities: Community[] = [
     slug: "cozy-corner",
     description: "Reading nooks, warm drinks, soft blankets",
     type: "RESTRICTED",
-    createdAt: new Date().toISOString(),
+    createdAt: "2025-10-01T00:00:00.000Z",
     _count: { members: 331, posts: 22 },
   },
 ];
@@ -111,7 +212,7 @@ export const mockSuggestedCommunities: Community[] = [
     slug: "golden-hour",
     description: "Sunset chasers and photography lovers",
     type: "PUBLIC",
-    createdAt: new Date().toISOString(),
+    createdAt: "2025-10-01T00:00:00.000Z",
     _count: { members: 2103, posts: 156 },
   },
   {
@@ -120,7 +221,7 @@ export const mockSuggestedCommunities: Community[] = [
     slug: "late-night-thoughts",
     description: "For when the world is asleep and your mind isn't",
     type: "PUBLIC",
-    createdAt: new Date().toISOString(),
+    createdAt: "2025-10-01T00:00:00.000Z",
     _count: { members: 890, posts: 67 },
   },
   {
@@ -129,7 +230,7 @@ export const mockSuggestedCommunities: Community[] = [
     slug: "slow-mornings",
     description: "Coffee, journaling, and taking it easy",
     type: "PUBLIC",
-    createdAt: new Date().toISOString(),
+    createdAt: "2025-10-01T00:00:00.000Z",
     _count: { members: 1567, posts: 98 },
   },
 ];
