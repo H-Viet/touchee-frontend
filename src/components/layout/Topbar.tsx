@@ -129,7 +129,9 @@ export const Topbar = () => {
         <button style={iconButtonStyle}>
           <Bell size={18} />
         </button>
-        <Avatar fallback={mockCurrentUser.displayName} size="sm" />
+        <Link href="/profile" style={{ display: "flex" }}>
+          <Avatar fallback={mockCurrentUser.displayName} size="sm" />
+        </Link>
       </div>
     </header>
   );
