@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronUp, ChevronDown } from "lucide-react";
+import { ArrowBigUp, ArrowBigDown } from "lucide-react";
 
 interface VoteControlProps {
   score: number;
@@ -46,7 +46,7 @@ export const VoteControl = ({
           color: vote === "up" ? "#ff3d8b" : "var(--color-text-muted)",
         }}
       >
-        <ChevronUp size={iconSize} strokeWidth={vote === "up" ? 3 : 2} />
+        <ArrowBigUp size={iconSize} strokeWidth={vote === "up" ? 3 : 2} />
       </button>
 
       <span
@@ -75,7 +75,7 @@ export const VoteControl = ({
           color: vote === "down" ? "#8b5cf6" : "var(--color-text-muted)",
         }}
       >
-        <ChevronDown size={iconSize} strokeWidth={vote === "down" ? 3 : 2} />
+        <ArrowBigDown size={iconSize} strokeWidth={vote === "down" ? 3 : 2} />
       </button>
     </div>
   );
