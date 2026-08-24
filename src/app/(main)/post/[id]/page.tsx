@@ -3,7 +3,12 @@
 import { use, useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { formatDistanceToNow } from "date-fns";
-import { ArrowLeft, MessageCircle, Trash2 } from "lucide-react";
+import { ArrowLeft, MessageCircle, Trash2, Search } from "lucide-react";
+import { CommentComposer } from "@/components/posts/CommentComposer";
+import {
+  CommentSortDropdown,
+  type CommentSortOption,
+} from "@/components/posts/CommentSortDropdown";
 import { Card, CardHeader, CardBody } from "@/components/ui/Card";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
@@ -48,7 +53,7 @@ export default function PostDetailPage({ params }: Props) {
   const [comments, setComments] = useState<Comment[]>(
     mockComments.filter((c) => c.postId === id),
   );
-  const [commentText, setCommentText] = useState("");
+  const [sortBy, setSortBy] = useState<CommentSortOption>("best");
   const [timeAgo, setTimeAgo] = useState("");
 
   useEffect(() => {
@@ -67,14 +72,13 @@ export default function PostDetailPage({ params }: Props) {
   const authorHandle = post.author?.username ?? "unknown";
   const isOwner = mockCurrentUser.id === post.authorId;
 
-  const handleAddComment = () => {
-    if (!commentText.trim()) return;
+  const handleAddComment = (content: string) => {
     const newComment: Comment = {
       id: `c-${Date.now()}`,
       postId: post.id,
       parentId: null,
       authorId: mockCurrentUser.id,
-      content: commentText.trim(),
+      content,
       createdAt: new Date().toISOString(),
       upvotes: 0,
       downvotes: 0,
@@ -82,7 +86,6 @@ export default function PostDetailPage({ params }: Props) {
       replies: [],
     };
     setComments((prev) => [newComment, ...prev]);
-    setCommentText("");
   };
 
   const handleReply = (parentId: string, content: string) => {
@@ -231,48 +234,51 @@ export default function PostDetailPage({ params }: Props) {
         </div>
       </Card>
 
-      <Card style={{ marginTop: "16px" }}>
-        <div style={{ display: "flex", gap: "12px" }}>
-          <Avatar fallback={mockCurrentUser.displayName} size="sm" />
-          <div style={{ flex: 1 }}>
-            <textarea
-              value={commentText}
-              onChange={(e) => setCommentText(e.target.value)}
-              placeholder="What are your thoughts?"
-              rows={3}
+      <div style={{ marginTop: "16px" }}>
+        <CommentComposer onSubmit={handleAddComment} />
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            gap: "16px",
+            marginTop: "16px",
+          }}
+        >
+          <CommentSortDropdown value={sortBy} onChange={setSortBy} />
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "8px",
+              flex: 1,
+              maxWidth: "260px",
+              padding: "6px 12px",
+              borderRadius: "9999px",
+              background: "rgba(34, 26, 44, 0.6)",
+              border: "1px solid rgba(255,255,255,0.08)",
+            }}
+          >
+            <Search
+              size={14}
+              style={{ color: "var(--color-text-muted)", flexShrink: 0 }}
+            />
+            <input
+              type="text"
+              placeholder="Search comments"
               style={{
-                width: "100%",
-                resize: "none",
                 background: "transparent",
                 border: "none",
                 outline: "none",
-                fontSize: "14px",
+                fontSize: "13px",
                 color: "var(--color-text-primary)",
-                fontFamily: "inherit",
-                lineHeight: 1.6,
-                boxSizing: "border-box",
+                width: "100%",
               }}
             />
-            <div
-              style={{
-                display: "flex",
-                justifyContent: "flex-end",
-                marginTop: "8px",
-                paddingTop: "8px",
-                borderTop: "1px solid rgba(255,255,255,0.06)",
-              }}
-            >
-              <Button
-                onClick={handleAddComment}
-                disabled={!commentText.trim()}
-                size="sm"
-              >
-                Comment
-              </Button>
-            </div>
           </div>
         </div>
-      </Card>
+      </div>
 
       <div
         style={{
