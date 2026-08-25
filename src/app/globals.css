@@ -96,3 +96,18 @@ body {
   transform: translateY(-2px);
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
 }
+
+/* Post detail back button — floats in the left gutter on wide screens,
+   falls back to sitting above the card when the window is too narrow */
+.post-detail-back {
+  position: absolute;
+  top: 4px;
+  left: -56px;
+}
+
+@media (max-width: 1300px) {
+  .post-detail-back {
+    position: static;
+    margin-bottom: 16px;
+  }
+}
