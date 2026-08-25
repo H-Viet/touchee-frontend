@@ -57,6 +57,8 @@ export const CommentItem = ({
         />
       )}
 
+      <VoteControl score={comment.upvotes - comment.downvotes} size="sm" />
+
       <div style={{ flex: 1, minWidth: 0 }}>
         <div
           style={{
@@ -100,7 +102,6 @@ export const CommentItem = ({
         </p>
 
         <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
-          <VoteControl score={comment.upvotes - comment.downvotes} size="sm" />
           <button
             onClick={() => setReplying((v) => !v)}
             style={{
