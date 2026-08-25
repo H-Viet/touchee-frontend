@@ -204,7 +204,21 @@ export const CommentComposer = ({
           >
             Cancel
           </button>
-          <Button onClick={handleSubmit} disabled={!content.trim()} size="sm">
+          <Button
+            onClick={handleSubmit}
+            disabled={!content.trim()}
+            size="sm"
+            style={{
+              fontSize: "13px",
+              fontWeight: 600,
+              padding: "7px 16px",
+              borderRadius: "9999px",
+              border: "none",
+              cursor: "pointer",
+              background: "linear-gradient(135deg, #ff6b6b, #ff3d8b, #8b5cf6)",
+              color: "white",
+            }}
+          >
             Comment
           </Button>
         </div>
