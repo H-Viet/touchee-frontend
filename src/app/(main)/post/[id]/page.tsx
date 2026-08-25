@@ -105,25 +105,25 @@ export default function PostDetailPage({ params }: Props) {
   };
 
   return (
-    <div>
+    <div style={{ position: "relative" }}>
       <button
         onClick={() => router.back()}
+        className="post-detail-back"
+        title="Back"
         style={{
+          height: "40px",
+          width: "40px",
+          borderRadius: "9999px",
+          border: "1px solid rgba(255,255,255,0.1)",
+          background: "rgba(34, 26, 44, 0.8)",
+          color: "var(--color-text-secondary)",
           display: "flex",
           alignItems: "center",
-          gap: "6px",
-          background: "none",
-          border: "none",
+          justifyContent: "center",
           cursor: "pointer",
-          color: "var(--color-text-secondary)",
-          fontSize: "14px",
-          fontWeight: 500,
-          marginBottom: "16px",
-          padding: 0,
         }}
       >
-        <ArrowLeft size={16} />
-        Back
+        <ArrowLeft size={18} />
       </button>
 
       <Card>
