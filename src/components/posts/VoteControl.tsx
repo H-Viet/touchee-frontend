@@ -6,11 +6,13 @@ import { ArrowBigUp, ArrowBigDown } from "lucide-react";
 interface VoteControlProps {
   score: number;
   size?: "sm" | "md";
+  orientation?: "vertical" | "horizontal";
 }
 
 export const VoteControl = ({
   score: baseScore,
   size = "md",
+  orientation = "vertical",
 }: VoteControlProps) => {
   const [vote, setVote] = useState<"up" | "down" | null>(null);
 
@@ -30,9 +32,9 @@ export const VoteControl = ({
     <div
       style={{
         display: "flex",
-        flexDirection: "column",
+        flexDirection: orientation === "horizontal" ? "row" : "column",
         alignItems: "center",
-        gap: "2px",
+        gap: orientation === "horizontal" ? "4px" : "2px",
       }}
     >
       <button
