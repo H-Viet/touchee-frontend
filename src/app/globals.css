@@ -111,3 +111,12 @@ body {
     margin-bottom: 16px;
   }
 }
+
+.comment-thread-line {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: var(--radius-full);
+  cursor: pointer;
+}
+.comment-thread-line:hover {
+  background: var(--color-primary);
+}
