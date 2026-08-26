@@ -229,7 +229,7 @@ export const CommentItem = ({ comment, onReply }: CommentItemProps) => {
                       style={{
                         position: "absolute",
                         left: "15px",
-                        top: "16px",
+                        top: "0px",
                         bottom: "-16px",
                         width: "2px",
                       }}
