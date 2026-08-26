@@ -13,7 +13,7 @@ import { Card, CardHeader, CardBody } from "@/components/ui/Card";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import { VoteControl } from "@/components/posts/VoteControl";
-import { CommentItem } from "@/components/posts/CommonItem";
+import { CommentItem } from "@/components/posts/CommentItem";
 import { mockPosts, mockComments, mockCurrentUser } from "@/lib/mock/data";
 import type { Comment } from "@/types";
 

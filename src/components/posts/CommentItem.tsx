@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Fragment } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { Avatar } from "@/components/ui/Avatar";
 import { VoteControl } from "@/components/posts/VoteControl";
@@ -78,8 +78,8 @@ export const CommentItem = ({ comment, onReply }: CommentItemProps) => {
         {comment.content}
       </p>
 
-      {/* Actions row — ONLY vote control + reply button (+ the collapsed
-          "N replies" link). Nothing tree-related belongs in here. */}
+      {/* Actions row — ONLY vote control, reply button, and the
+          collapse/expand toggle. Nothing tree-shaped belongs in here. */}
       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
         <VoteControl
           score={comment.upvotes - comment.downvotes}
@@ -101,9 +101,9 @@ export const CommentItem = ({ comment, onReply }: CommentItemProps) => {
           Reply
         </button>
 
-        {hasReplies && collapsed && (
+        {hasReplies && (
           <button
-            onClick={() => setCollapsed(false)}
+            onClick={() => setCollapsed((v) => !v)}
             style={{
               background: "none",
               border: "none",
@@ -114,7 +114,9 @@ export const CommentItem = ({ comment, onReply }: CommentItemProps) => {
               padding: 0,
             }}
           >
-            {replyCount} {replyCount === 1 ? "reply" : "replies"}
+            {collapsed
+              ? `${replyCount} ${replyCount === 1 ? "reply" : "replies"}`
+              : "Hide replies"}
           </button>
         )}
       </div>
@@ -191,52 +193,56 @@ export const CommentItem = ({ comment, onReply }: CommentItemProps) => {
         </div>
       )}
 
-      {/* Replies tree — ONE copy only, as a sibling of the actions row
-          above, not nested inside it. */}
+      {/* Replies tree — its own block, sibling of everything above,
+          nested inside nothing else. */}
       {hasReplies && !collapsed && (
-        <div style={{ position: "relative", marginTop: "14px" }}>
-          <div
-            role="button"
-            tabIndex={0}
-            onClick={() => setCollapsed(true)}
-            onKeyDown={(e) => e.key === "Enter" && setCollapsed(true)}
-            title="Collapse replies"
-            className="comment-thread-line"
-            style={{
-              position: "absolute",
-              left: "15px",
-              top: 0,
-              bottom: 0,
-              width: "2px",
-            }}
-          />
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "16px",
-              paddingLeft: "32px",
-            }}
-          >
-            {comment.replies!.map((reply) => (
-              <div key={reply.id} style={{ position: "relative" }}>
-                <div
-                  aria-hidden
-                  style={{
-                    position: "absolute",
-                    left: "-17px",
-                    top: 0,
-                    width: "17px",
-                    height: "16px",
-                    borderLeft: "2px solid rgba(255,255,255,0.12)",
-                    borderBottom: "2px solid rgba(255,255,255,0.12)",
-                    borderBottomLeftRadius: "12px",
-                  }}
-                />
-                <CommentItem comment={reply} onReply={onReply} />
-              </div>
-            ))}
-          </div>
+        <div
+          style={{
+            marginTop: "14px",
+            display: "grid",
+            gridTemplateColumns: "32px 1fr",
+            rowGap: "16px",
+          }}
+        >
+          {comment.replies!.map((reply, index) => {
+            const isLast = index === comment.replies!.length - 1;
+            return (
+              <Fragment key={reply.id}>
+                <div style={{ position: "relative" }}>
+                  <div
+                    aria-hidden
+                    style={{
+                      position: "absolute",
+                      left: "15px",
+                      top: 0,
+                      width: "17px",
+                      height: "16px",
+                      borderLeft: "2px solid rgba(255,255,255,0.12)",
+                      borderBottom: "2px solid rgba(255,255,255,0.12)",
+                      borderBottomLeftRadius: "12px",
+                    }}
+                  />
+                  {!isLast && (
+                    <div
+                      aria-hidden
+                      className="comment-thread-line"
+                      style={{
+                        position: "absolute",
+                        left: "15px",
+                        top: "16px",
+                        bottom: "-16px",
+                        width: "2px",
+                      }}
+                    />
+                  )}
+                </div>
+
+                <div>
+                  <CommentItem comment={reply} onReply={onReply} />
+                </div>
+              </Fragment>
+            );
+          })}
         </div>
       )}
     </div>
