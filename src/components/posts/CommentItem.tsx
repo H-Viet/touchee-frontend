@@ -7,21 +7,40 @@ import { VoteControl } from "@/components/posts/VoteControl";
 import type { Comment } from "@/types";
 import Link from "next/link";
 
+const MAX_DEPTH = 4;
+
 interface CommentItemProps {
   comment: Comment;
   onReply: (parentId: string, content: string) => void;
   depth?: number;
+  // If a parent renders this CommentItem as one of its replies, it passes
+  // these two down and "controls" the collapse state from outside. If
+  // they're omitted (top-level comments), this component manages its own
+  // collapse state internally instead. Same pattern as a controlled <input>.
+  collapsed?: boolean;
+  onToggleCollapse?: () => void;
 }
 
 export const CommentItem = ({
   comment,
   onReply,
   depth = 0,
+  collapsed: collapsedProp,
+  onToggleCollapse,
 }: CommentItemProps) => {
   const [replying, setReplying] = useState(false);
   const [replyText, setReplyText] = useState("");
   const [timeAgo, setTimeAgo] = useState("");
-  const [collapsed, setCollapsed] = useState(false);
+  const [internalCollapsed, setInternalCollapsed] = useState(false);
+  // Tracks which of THIS comment's replies are collapsed, by id — this is
+  // the state that used to live inside each child's own `collapsed` state.
+  const [collapsedReplies, setCollapsedReplies] = useState<Set<string>>(
+    new Set(),
+  );
+
+  const isCollapsed = collapsedProp ?? internalCollapsed;
+  const toggleCollapse =
+    onToggleCollapse ?? (() => setInternalCollapsed((v) => !v));
 
   useEffect(() => {
     setTimeAgo(
@@ -29,13 +48,20 @@ export const CommentItem = ({
     );
   }, [comment.createdAt]);
 
-  const MAX_DEPTH = 4;
-
   const authorName = comment.author?.displayName ?? "Unknown";
   const authorHandle = comment.author?.username ?? "unknown";
   const hasReplies = !!comment.replies && comment.replies.length > 0;
   const isAtMaxDepth = depth >= MAX_DEPTH;
   const replyCount = comment.replies?.length ?? 0;
+
+  const toggleReplyCollapse = (replyId: string) => {
+    setCollapsedReplies((prev) => {
+      const next = new Set(prev);
+      if (next.has(replyId)) next.delete(replyId);
+      else next.add(replyId);
+      return next;
+    });
+  };
 
   const handleReplySubmit = () => {
     if (!replyText.trim()) return;
@@ -87,8 +113,6 @@ export const CommentItem = ({
         {comment.content}
       </p>
 
-      {/* Actions row — ONLY vote control, reply button, and the
-          collapse/expand toggle. Nothing tree-shaped belongs in here. */}
       <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
         <VoteControl
           score={comment.upvotes - comment.downvotes}
@@ -112,7 +136,7 @@ export const CommentItem = ({
 
         {hasReplies && !isAtMaxDepth && (
           <button
-            onClick={() => setCollapsed((v) => !v)}
+            onClick={toggleCollapse}
             style={{
               background: "none",
               border: "none",
@@ -123,7 +147,7 @@ export const CommentItem = ({
               padding: 0,
             }}
           >
-            {collapsed
+            {isCollapsed
               ? `${replyCount} ${replyCount === 1 ? "reply" : "replies"}`
               : "Hide replies"}
           </button>
@@ -215,33 +239,57 @@ export const CommentItem = ({
         </div>
       )}
 
-      {/* Replies tree — its own block, sibling of everything above,
-          nested inside nothing else. */}
-      {hasReplies && !collapsed && (
+      {hasReplies && !isCollapsed && !isAtMaxDepth && (
         <div
           style={{
             marginTop: "14px",
             display: "grid",
             gridTemplateColumns: "32px 1fr",
-            rowGap: "16px",
           }}
         >
           {comment.replies!.map((reply, index) => {
             const isLast = index === comment.replies!.length - 1;
+            const replyHasReplies = !!reply.replies && reply.replies.length > 0;
+            const replyCollapsed = collapsedReplies.has(reply.id);
+
             return (
               <Fragment key={reply.id}>
                 <div style={{ position: "relative" }}>
                   <div
-                    aria-hidden
+                    // Only a real control when there's something to collapse
+                    // — a leaf reply's curve stays purely decorative, same
+                    // as Reddit never showing a "[-]" on comments with no
+                    // children of their own.
+                    aria-hidden={!replyHasReplies}
+                    role={replyHasReplies ? "button" : undefined}
+                    tabIndex={replyHasReplies ? 0 : undefined}
+                    onClick={
+                      replyHasReplies
+                        ? () => toggleReplyCollapse(reply.id)
+                        : undefined
+                    }
+                    onKeyDown={
+                      replyHasReplies
+                        ? (e) =>
+                            e.key === "Enter" && toggleReplyCollapse(reply.id)
+                        : undefined
+                    }
+                    title={
+                      replyHasReplies
+                        ? replyCollapsed
+                          ? "Expand replies"
+                          : "Collapse replies"
+                        : undefined
+                    }
+                    className="comment-thread-curve"
                     style={{
                       position: "absolute",
                       left: "15px",
                       top: 0,
                       width: "17px",
                       height: "16px",
-                      borderLeft: "2px solid rgba(255,255,255,0.12)",
-                      borderBottom: "2px solid rgba(255,255,255,0.12)",
                       borderBottomLeftRadius: "12px",
+                      cursor: replyHasReplies ? "pointer" : "default",
                     }}
                   />
                   {!isLast && (
@@ -251,19 +299,21 @@ export const CommentItem = ({
                       style={{
                         position: "absolute",
                         left: "15px",
-                        top: "0px",
-                        bottom: "-16px",
+                        top: 0,
+                        bottom: 0,
                         width: "2px",
                       }}
                     />
                   )}
                 </div>
 
-                <div>
+                <div style={{ paddingBottom: isLast ? 0 : "16px" }}>
                   <CommentItem
                     comment={reply}
                     onReply={onReply}
                     depth={depth + 1}
+                    collapsed={replyCollapsed}
+                    onToggleCollapse={() => toggleReplyCollapse(reply.id)}
                   />
                 </div>
               </Fragment>
