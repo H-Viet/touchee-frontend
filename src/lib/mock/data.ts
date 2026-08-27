@@ -121,7 +121,104 @@ export const mockComments: Comment[] = [
     upvotes: 15,
     downvotes: 0,
     author: mockUsers[0],
-    replies: [],
+    replies: [
+      {
+        id: "c9",
+        postId: "post-2",
+        parentId: "c7",
+        authorId: "user-3",
+        content: "Best kept secret, I'm never telling 😄",
+        createdAt: "2026-08-22T07:50:00.000Z",
+        upvotes: 9,
+        downvotes: 0,
+        author: mockUsers[2],
+        replies: [
+          {
+            id: "c10",
+            postId: "post-2",
+            parentId: "c9",
+            authorId: "user-2",
+            content: "Okay now I NEED an invite to whatever rooftop this is",
+            createdAt: "2026-08-22T07:55:00.000Z",
+            upvotes: 6,
+            downvotes: 0,
+            author: mockUsers[1],
+            replies: [
+              {
+                id: "c11",
+                postId: "post-2",
+                parentId: "c10",
+                authorId: "user-1",
+                content: "Same, this looks like prime golden hour real estate",
+                createdAt: "2026-08-22T08:00:00.000Z",
+                upvotes: 5,
+                downvotes: 0,
+                author: mockUsers[0],
+                replies: [
+                  {
+                    // depth 4 — MAX_DEPTH cap kicks in here, so this comment's
+                    // own reply (c13) only becomes visible via
+                    // "Continue this thread"
+                    id: "c12",
+                    postId: "post-2",
+                    parentId: "c11",
+                    authorId: "user-3",
+                    content: "Ha, maybe if you bring snacks",
+                    createdAt: "2026-08-22T08:05:00.000Z",
+                    upvotes: 3,
+                    downvotes: 0,
+                    author: mockUsers[2],
+                    replies: [
+                      {
+                        // depth 5 on the post page — this is the comment
+                        // that becomes the new "root" on its own thread page
+                        id: "c13",
+                        postId: "post-2",
+                        parentId: "c12",
+                        authorId: "user-2",
+                        content: "Deal. I make a mean charcuterie board 🧀",
+                        createdAt: "2026-08-22T08:10:00.000Z",
+                        upvotes: 4,
+                        downvotes: 0,
+                        author: mockUsers[1],
+                        replies: [
+                          {
+                            id: "c13a",
+                            postId: "post-2",
+                            parentId: "c13",
+                            authorId: "user-3",
+                            content: "Now THIS is a plan I can get behind",
+                            createdAt: "2026-08-22T08:15:00.000Z",
+                            upvotes: 2,
+                            downvotes: 0,
+                            author: mockUsers[2],
+                            replies: [],
+                          },
+                        ],
+                      },
+                    ],
+                  },
+                ],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        // sibling of c9, at depth 1 — good for checking the trunk-line
+        // stops correctly after the second (last) branch, not just the first
+        id: "c14",
+        postId: "post-2",
+        parentId: "c7",
+        authorId: "user-3",
+        content: "Following for future rooftop recommendations 📌",
+        createdAt: "2026-08-22T07:52:00.000Z",
+        upvotes: 2,
+        downvotes: 0,
+        author: mockUsers[2],
+        replies: [],
+      },
+    ],
   },
   {
     id: "c1",
@@ -160,7 +257,7 @@ export const mockComments: Comment[] = [
           {
             id: "c8",
             postId: "post-3",
-            parentId: "c1",
+            parentId: "c2", // fixed — was "c1", but it's nested under c2
             authorId: "user-3",
             content: "I second this, cozy reading corners are unmatched 📚",
             createdAt: "2026-08-22T05:20:00.000Z",
