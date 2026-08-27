@@ -112,6 +112,7 @@ body {
   }
 }
 
+/* Comment Thread Line */
 .comment-thread-line {
   background: rgba(255, 255, 255, 0.12);
   border-radius: var(--radius-full);
@@ -119,4 +120,13 @@ body {
 }
 .comment-thread-line:hover {
   background: var(--color-primary);
+}
+
+.comment-thread-curve {
+  border-left: 2px solid rgba(255, 255, 255, 0.12);
+  border-bottom: 2px solid rgba(255, 255, 255, 0.12);
+  transition: border-color 0.15s ease;
+}
+.comment-thread-curve:hover {
+  border-color: var(--color-primary);
 }
