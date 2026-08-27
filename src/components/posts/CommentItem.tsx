@@ -5,13 +5,19 @@ import { formatDistanceToNow } from "date-fns";
 import { Avatar } from "@/components/ui/Avatar";
 import { VoteControl } from "@/components/posts/VoteControl";
 import type { Comment } from "@/types";
+import Link from "next/link";
 
 interface CommentItemProps {
   comment: Comment;
   onReply: (parentId: string, content: string) => void;
+  depth?: number;
 }
 
-export const CommentItem = ({ comment, onReply }: CommentItemProps) => {
+export const CommentItem = ({
+  comment,
+  onReply,
+  depth = 0,
+}: CommentItemProps) => {
   const [replying, setReplying] = useState(false);
   const [replyText, setReplyText] = useState("");
   const [timeAgo, setTimeAgo] = useState("");
@@ -23,9 +29,12 @@ export const CommentItem = ({ comment, onReply }: CommentItemProps) => {
     );
   }, [comment.createdAt]);
 
+  const MAX_DEPTH = 4;
+
   const authorName = comment.author?.displayName ?? "Unknown";
   const authorHandle = comment.author?.username ?? "unknown";
   const hasReplies = !!comment.replies && comment.replies.length > 0;
+  const isAtMaxDepth = depth >= MAX_DEPTH;
   const replyCount = comment.replies?.length ?? 0;
 
   const handleReplySubmit = () => {
@@ -101,7 +110,7 @@ export const CommentItem = ({ comment, onReply }: CommentItemProps) => {
           Reply
         </button>
 
-        {hasReplies && (
+        {hasReplies && !isAtMaxDepth && (
           <button
             onClick={() => setCollapsed((v) => !v)}
             style={{
@@ -118,6 +127,19 @@ export const CommentItem = ({ comment, onReply }: CommentItemProps) => {
               ? `${replyCount} ${replyCount === 1 ? "reply" : "replies"}`
               : "Hide replies"}
           </button>
+        )}
+        {hasReplies && isAtMaxDepth && (
+          <Link
+            href={`/post/${comment.postId}/comment/${comment.id}`}
+            style={{
+              fontSize: "12px",
+              fontWeight: 600,
+              color: "var(--color-primary)",
+              textDecoration: "none",
+            }}
+          >
+            Continue this thread →
+          </Link>
         )}
       </div>
 
@@ -238,7 +260,11 @@ export const CommentItem = ({ comment, onReply }: CommentItemProps) => {
                 </div>
 
                 <div>
-                  <CommentItem comment={reply} onReply={onReply} />
+                  <CommentItem
+                    comment={reply}
+                    onReply={onReply}
+                    depth={depth + 1}
+                  />
                 </div>
               </Fragment>
             );
