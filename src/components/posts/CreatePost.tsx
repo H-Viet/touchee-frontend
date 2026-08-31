@@ -13,9 +13,10 @@ interface CreatePostProps {
     mediaUrl: string | null,
     mediaType: "image" | "video" | null,
   ) => void;
+  bare?: boolean;
 }
 
-export const CreatePost = ({ onSubmit }: CreatePostProps) => {
+export const CreatePost = ({ onSubmit, bare = false }: CreatePostProps) => {
   const [content, setContent] = useState("");
   const [mediaPreview, setMediaPreview] = useState<string | null>(null);
   const [mediaType, setMediaType] = useState<"image" | "video" | null>(null);
@@ -53,152 +54,156 @@ export const CreatePost = ({ onSubmit }: CreatePostProps) => {
     removeMedia();
   };
 
-  return (
-    <Card style={{ marginBottom: "24px" }}>
-      <div style={{ display: "flex", gap: "12px" }}>
-        <Avatar fallback={mockCurrentUser.displayName} size="md" pulse />
-        <div style={{ flex: 1 }}>
-          <textarea
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            placeholder="What's your vibe right now?"
-            rows={3}
-            style={{
-              width: "100%",
-              resize: "none",
-              background: "transparent",
-              border: "none",
-              outline: "none",
-              fontSize: "14px",
-              color: "var(--color-text-primary)",
-              fontFamily: "inherit",
-              lineHeight: 1.6,
-              boxSizing: "border-box",
-            }}
-          />
+  const formContent = (
+    <div style={{ display: "flex", gap: "12px" }}>
+      <Avatar fallback={mockCurrentUser.displayName} size="md" pulse />
+      <div style={{ flex: 1 }}>
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder="What's your vibe right now?"
+          rows={3}
+          style={{
+            width: "100%",
+            resize: "none",
+            background: "transparent",
+            border: "none",
+            outline: "none",
+            fontSize: "14px",
+            color: "var(--color-text-primary)",
+            fontFamily: "inherit",
+            lineHeight: 1.6,
+            boxSizing: "border-box",
+          }}
+        />
 
-          {mediaPreview && (
-            <div
-              style={{
-                position: "relative",
-                marginTop: "8px",
-                borderRadius: "12px",
-                overflow: "hidden",
-              }}
-            >
-              <button
-                onClick={removeMedia}
-                style={{
-                  position: "absolute",
-                  top: "8px",
-                  right: "8px",
-                  background: "rgba(0,0,0,0.6)",
-                  border: "none",
-                  borderRadius: "9999px",
-                  padding: "6px",
-                  cursor: "pointer",
-                  display: "flex",
-                  color: "white",
-                  zIndex: 1,
-                }}
-              >
-                <X size={14} />
-              </button>
-              {mediaType === "image" ? (
-                // eslint-disable-next-line @next/next/no-img-element
-                <img
-                  src={mediaPreview}
-                  alt="Upload preview"
-                  style={{
-                    width: "100%",
-                    maxHeight: "320px",
-                    objectFit: "cover",
-                    display: "block",
-                  }}
-                />
-              ) : (
-                <video
-                  src={mediaPreview}
-                  controls
-                  style={{
-                    width: "100%",
-                    maxHeight: "320px",
-                    display: "block",
-                  }}
-                />
-              )}
-            </div>
-          )}
-
-          <input
-            ref={fileInputRef}
-            type="file"
-            style={{ display: "none" }}
-            onChange={handleFileChange}
-          />
-
+        {mediaPreview && (
           <div
             style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginTop: "12px",
-              paddingTop: "12px",
-              borderTop: "1px solid rgba(255,255,255,0.06)",
+              position: "relative",
+              marginTop: "8px",
+              borderRadius: "12px",
+              overflow: "hidden",
             }}
           >
-            <div style={{ display: "flex", gap: "4px" }}>
-              <button
-                onClick={() => handleFilePick("image")}
-                title="Add image"
-                style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  color: "var(--color-text-muted)",
-                  padding: "6px",
-                  borderRadius: "8px",
-                  display: "flex",
-                }}
-              >
-                <ImageIcon size={18} />
-              </button>
-              <button
-                onClick={() => handleFilePick("video")}
-                title="Add video"
-                style={{
-                  background: "none",
-                  border: "none",
-                  cursor: "pointer",
-                  color: "var(--color-text-muted)",
-                  padding: "6px",
-                  borderRadius: "8px",
-                  display: "flex",
-                }}
-              >
-                <Video size={18} />
-              </button>
-              <span
-                style={{
-                  fontSize: "12px",
-                  color: "var(--color-text-muted)",
-                  alignSelf: "center",
-                  marginLeft: "8px",
-                }}
-              >
-                {remaining} left
-              </span>
-            </div>
-            <Button
-              onClick={handleSubmit}
-              disabled={!content.trim() || remaining < 0}
-              size="sm"
+            <button
+              onClick={removeMedia}
+              style={{
+                position: "absolute",
+                top: "8px",
+                right: "8px",
+                background: "rgba(0,0,0,0.6)",
+                border: "none",
+                borderRadius: "9999px",
+                padding: "6px",
+                cursor: "pointer",
+                display: "flex",
+                color: "white",
+                zIndex: 1,
+              }}
             >
-              Post
-            </Button>
+              <X size={14} />
+            </button>
+            {mediaType === "image" ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={mediaPreview}
+                alt="Upload preview"
+                style={{
+                  width: "100%",
+                  maxHeight: "320px",
+                  objectFit: "cover",
+                  display: "block",
+                }}
+              />
+            ) : (
+              <video
+                src={mediaPreview}
+                controls
+                style={{
+                  width: "100%",
+                  maxHeight: "320px",
+                  display: "block",
+                }}
+              />
+            )}
           </div>
+        )}
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          style={{ display: "none" }}
+          onChange={handleFileChange}
+        />
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginTop: "12px",
+            paddingTop: "12px",
+            borderTop: "1px solid rgba(255,255,255,0.06)",
+          }}
+        >
+          <div style={{ display: "flex", gap: "4px" }}>
+            <button
+              onClick={() => handleFilePick("image")}
+              title="Add image"
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                color: "var(--color-text-muted)",
+                padding: "6px",
+                borderRadius: "8px",
+                display: "flex",
+              }}
+            >
+              <ImageIcon size={18} />
+            </button>
+            <button
+              onClick={() => handleFilePick("video")}
+              title="Add video"
+              style={{
+                background: "none",
+                border: "none",
+                cursor: "pointer",
+                color: "var(--color-text-muted)",
+                padding: "6px",
+                borderRadius: "8px",
+                display: "flex",
+              }}
+            >
+              <Video size={18} />
+            </button>
+            <span
+              style={{
+                fontSize: "12px",
+                color: "var(--color-text-muted)",
+                alignSelf: "center",
+                marginLeft: "8px",
+              }}
+            >
+              {remaining} left
+            </span>
+          </div>
+          <Button
+            onClick={handleSubmit}
+            disabled={!content.trim() || remaining < 0}
+            size="sm"
+          >
+            Post
+          </Button>
         </div>
       </div>
-    </Card>
+    </div>
+  );
+
+  return bare ? (
+    formContent
+  ) : (
+    <Card style={{ marginBottom: "24px" }}>{formContent}</Card>
   );
 };
