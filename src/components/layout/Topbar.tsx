@@ -123,9 +123,13 @@ export const Topbar = () => {
           flexShrink: 0,
         }}
       >
-        <button style={iconButtonStyle}>
+        <Link
+          href={"/create-post"}
+          style={{ ...iconButtonStyle, textDecoration: "none" }}
+          title="Create post"
+        >
           <Plus size={18} />
-        </button>
+        </Link>
         <button style={iconButtonStyle}>
           <Bell size={18} />
         </button>
