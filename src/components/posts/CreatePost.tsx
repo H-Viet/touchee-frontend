@@ -1,13 +1,25 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { Image as ImageIcon, Video, X } from "lucide-react";
+import { useEditor, EditorContent } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
+import Superscript from "@tiptap/extension-superscript";
+import Link from "@tiptap/extension-link";
+import Placeholder from "@tiptap/extension-placeholder";
+import { Image as ImageIcon, Video, X, AlertCircle } from "lucide-react";
 import { Card } from "@/components/ui/Card";
 import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
+import { CommunitySelectDropdown } from "../communities/CommunitySelectDropdown";
+import { EditorToolbar } from "@/components/posts/EditorToolbar";
+import { saveDraft } from "@/lib/draft";
 import { mockCurrentUser } from "@/lib/mock/data";
+import type { Community } from "@/types";
 
 interface CreatePostProps {
+  communities: Community[];
+  selectedCommunityId: string | null;
+  onCommunityChange: (communityId: string) => void;
   onSubmit: (
     content: string,
     mediaUrl: string | null,
@@ -16,13 +28,54 @@ interface CreatePostProps {
   bare?: boolean;
 }
 
-export const CreatePost = ({ onSubmit, bare = false }: CreatePostProps) => {
-  const [content, setContent] = useState("");
+const iconBtnStyle = {
+  background: "none",
+  border: "none",
+  cursor: "pointer",
+  color: "var(--color-text-muted)",
+  padding: "6px",
+  borderRadius: "8px",
+  display: "flex",
+} as const;
+
+export const CreatePost = ({
+  communities,
+  selectedCommunityId,
+  onCommunityChange,
+  onSubmit,
+  bare = false,
+}: CreatePostProps) => {
   const [mediaPreview, setMediaPreview] = useState<string | null>(null);
   const [mediaType, setMediaType] = useState<"image" | "video" | null>(null);
+  const [draftSaved, setDraftSaved] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const remaining = 500 - content.length;
+  const editor = useEditor({
+    extensions: [
+      StarterKit.configure({ heading: { levels: [2, 3] } }),
+      Superscript,
+      Link.configure({ openOnClick: false, autolink: true }),
+      Placeholder.configure({ placeholder: "What's your vibe right now?" }),
+    ],
+    content: "",
+    // Next.js renders once on the server, then again on the client — if
+    // TipTap tried to render immediately on both, the two could disagree
+    // and React would throw a hydration mismatch. Same category of bug as
+    // the formatDistanceToNow issue you've hit before — the fix is telling
+    // TipTap to wait and only render once the client has actually mounted.
+    immediatelyRender: false,
+    editorProps: {
+      attributes: {
+        style:
+          "outline: none; font-size: 14px; line-height: 1.6; color: var(--color-text-primary); min-height: 72px;",
+      },
+    },
+  });
+
+  const textLength = editor?.getText().length ?? 0;
+  const remaining = 500 - textLength;
+  const hasContent = textLength > 0;
+  const canSubmit = !!selectedCommunityId && hasContent && remaining >= 0;
 
   const handleFilePick = (type: "image" | "video") => {
     if (!fileInputRef.current) return;
@@ -34,8 +87,6 @@ export const CreatePost = ({ onSubmit, bare = false }: CreatePostProps) => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    // 🚧 Mock only — this creates a temporary local preview URL.
-    // Real upload (backend storage) gets wired in later.
     const url = URL.createObjectURL(file);
     setMediaPreview(url);
     setMediaType(e.target.dataset.type as "image" | "video");
@@ -48,164 +99,175 @@ export const CreatePost = ({ onSubmit, bare = false }: CreatePostProps) => {
   };
 
   const handleSubmit = () => {
-    if (!content.trim()) return;
-    onSubmit(content.trim(), mediaPreview, mediaType);
-    setContent("");
+    if (!canSubmit || !editor) return;
+    onSubmit(editor.getHTML(), mediaPreview, mediaType);
+    editor.commands.clearContent();
     removeMedia();
   };
 
-  const formContent = (
-    <div style={{ display: "flex", gap: "12px" }}>
-      <Avatar fallback={mockCurrentUser.displayName} size="md" pulse />
-      <div style={{ flex: 1 }}>
-        <textarea
-          value={content}
-          onChange={(e) => setContent(e.target.value)}
-          placeholder="What's your vibe right now?"
-          rows={3}
-          style={{
-            width: "100%",
-            resize: "none",
-            background: "transparent",
-            border: "none",
-            outline: "none",
-            fontSize: "14px",
-            color: "var(--color-text-primary)",
-            fontFamily: "inherit",
-            lineHeight: 1.6,
-            boxSizing: "border-box",
-          }}
-        />
+  const handleSaveDraft = () => {
+    if (!editor || !hasContent) return;
+    saveDraft({
+      communityId: selectedCommunityId,
+      content: editor.getHTML(),
+      mediaUrl: mediaPreview,
+      mediaType,
+    });
+    setDraftSaved(true);
+    setTimeout(() => setDraftSaved(false), 2000);
+  };
 
-        {mediaPreview && (
+  const formContent = (
+    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+      <div>
+        <CommunitySelectDropdown
+          communities={communities}
+          value={selectedCommunityId}
+          onChange={onCommunityChange}
+        />
+        {!selectedCommunityId && (
           <div
             style={{
-              position: "relative",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
               marginTop: "8px",
-              borderRadius: "12px",
-              overflow: "hidden",
+              fontSize: "13px",
+              color: "var(--color-error)",
             }}
           >
-            <button
-              onClick={removeMedia}
-              style={{
-                position: "absolute",
-                top: "8px",
-                right: "8px",
-                background: "rgba(0,0,0,0.6)",
-                border: "none",
-                borderRadius: "9999px",
-                padding: "6px",
-                cursor: "pointer",
-                display: "flex",
-                color: "white",
-                zIndex: 1,
-              }}
-            >
-              <X size={14} />
-            </button>
-            {mediaType === "image" ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img
-                src={mediaPreview}
-                alt="Upload preview"
-                style={{
-                  width: "100%",
-                  maxHeight: "320px",
-                  objectFit: "cover",
-                  display: "block",
-                }}
-              />
-            ) : (
-              <video
-                src={mediaPreview}
-                controls
-                style={{
-                  width: "100%",
-                  maxHeight: "320px",
-                  display: "block",
-                }}
-              />
-            )}
+            <AlertCircle size={14} />
+            Please select a community before posting.
           </div>
         )}
+      </div>
 
-        <input
-          ref={fileInputRef}
-          type="file"
-          style={{ display: "none" }}
-          onChange={handleFileChange}
-        />
+      <div style={{ display: "flex", gap: "12px" }}>
+        <Avatar fallback={mockCurrentUser.displayName} size="md" pulse />
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <EditorToolbar editor={editor} />
+          <EditorContent editor={editor} />
 
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            marginTop: "12px",
-            paddingTop: "12px",
-            borderTop: "1px solid rgba(255,255,255,0.06)",
-          }}
-        >
-          <div style={{ display: "flex", gap: "4px" }}>
-            <button
-              onClick={() => handleFilePick("image")}
-              title="Add image"
+          {mediaPreview && (
+            <div
               style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                color: "var(--color-text-muted)",
-                padding: "6px",
-                borderRadius: "8px",
-                display: "flex",
+                position: "relative",
+                marginTop: "8px",
+                borderRadius: "12px",
+                overflow: "hidden",
               }}
             >
-              <ImageIcon size={18} />
-            </button>
-            <button
-              onClick={() => handleFilePick("video")}
-              title="Add video"
-              style={{
-                background: "none",
-                border: "none",
-                cursor: "pointer",
-                color: "var(--color-text-muted)",
-                padding: "6px",
-                borderRadius: "8px",
-                display: "flex",
-              }}
-            >
-              <Video size={18} />
-            </button>
-            <span
-              style={{
-                fontSize: "12px",
-                color: "var(--color-text-muted)",
-                alignSelf: "center",
-                marginLeft: "8px",
-              }}
-            >
-              {remaining} left
-            </span>
-          </div>
-          <Button
-            onClick={handleSubmit}
-            disabled={!content.trim() || remaining < 0}
-            size="sm"
+              <button
+                onClick={removeMedia}
+                style={{
+                  position: "absolute",
+                  top: "8px",
+                  right: "8px",
+                  background: "rgba(0,0,0,0.6)",
+                  border: "none",
+                  borderRadius: "9999px",
+                  padding: "6px",
+                  cursor: "pointer",
+                  display: "flex",
+                  color: "white",
+                  zIndex: 1,
+                }}
+              >
+                <X size={14} />
+              </button>
+              {mediaType === "image" ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={mediaPreview}
+                  alt="Upload preview"
+                  style={{
+                    width: "100%",
+                    maxHeight: "320px",
+                    objectFit: "cover",
+                    display: "block",
+                  }}
+                />
+              ) : (
+                <video
+                  src={mediaPreview}
+                  controls
+                  style={{
+                    width: "100%",
+                    maxHeight: "320px",
+                    display: "block",
+                  }}
+                />
+              )}
+            </div>
+          )}
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            style={{ display: "none" }}
+            onChange={handleFileChange}
+          />
+
+          <div
             style={{
-              fontSize: "13px",
-              fontWeight: 600,
-              padding: "7px 16px",
-              borderRadius: "9999px",
-              border: "none",
-              cursor: "pointer",
-              background: "linear-gradient(135deg, #ff6b6b, #ff3d8b, #8b5cf6)",
-              color: "white",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginTop: "12px",
+              paddingTop: "12px",
+              borderTop: "1px solid rgba(255,255,255,0.06)",
             }}
           >
-            Post
-          </Button>
+            <div style={{ display: "flex", gap: "4px", alignItems: "center" }}>
+              <button
+                onClick={() => handleFilePick("image")}
+                title="Add image"
+                style={iconBtnStyle}
+              >
+                <ImageIcon size={18} />
+              </button>
+              <button
+                onClick={() => handleFilePick("video")}
+                title="Add video"
+                style={iconBtnStyle}
+              >
+                <Video size={18} />
+              </button>
+              <span
+                style={{
+                  fontSize: "12px",
+                  color: "var(--color-text-muted)",
+                  marginLeft: "8px",
+                }}
+              >
+                {remaining} left
+              </span>
+              {draftSaved && (
+                <span
+                  style={{
+                    fontSize: "12px",
+                    color: "var(--color-primary)",
+                    marginLeft: "8px",
+                  }}
+                >
+                  Draft saved
+                </span>
+              )}
+            </div>
+            <div style={{ display: "flex", gap: "8px" }}>
+              <Button
+                variant="secondary"
+                size="sm"
+                onClick={handleSaveDraft}
+                disabled={!hasContent}
+              >
+                Save Draft
+              </Button>
+              <Button onClick={handleSubmit} disabled={!canSubmit} size="sm">
+                Post
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
     </div>
