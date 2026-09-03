@@ -86,6 +86,11 @@ export type CommunityType = "PUBLIC" | "RESTRICTED" | "PRIVATE";
 export type MemberRole = "OWNER" | "MODERATOR" | "MEMBER";
 export type MemberStatus = "ACTIVE" | "BANNED" | "PENDING";
 
+export interface CommunityRule {
+  title: string;
+  description: string;
+}
+
 export interface Community {
   id: string;
   name: string;
@@ -97,6 +102,7 @@ export interface Community {
     members: number;
     posts: number;
   };
+  rules?: CommunityRule[];
 }
 
 export interface CreateCommunityDto {
