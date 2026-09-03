@@ -2,17 +2,18 @@
 
 import { useRouter } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
-import { CreatePost } from "@/components/posts/CreatePost";
+import { CreatePostFlow } from "@/components/posts/CreatePostFlow";
 
 export default function CreatePostPage() {
   const router = useRouter();
 
-  const handleCreate = (
+  const handleSubmitted = (
     content: string,
     mediaUrl: string | null,
     mediaType: "image" | "video" | null,
+    communityId: string,
   ) => {
-    console.log("new post", { content, mediaUrl, mediaType });
+    console.log("new post", { content, mediaUrl, mediaType, communityId });
     router.push("/");
   };
 
@@ -49,7 +50,7 @@ export default function CreatePostPage() {
         Create post
       </h1>
 
-      <CreatePost onSubmit={handleCreate} />
+      <CreatePostFlow onSubmitted={handleSubmitted} />
     </div>
   );
 }

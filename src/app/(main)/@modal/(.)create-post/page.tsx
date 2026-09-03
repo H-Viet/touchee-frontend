@@ -2,25 +2,24 @@
 
 import { useRouter } from "next/navigation";
 import { Modal } from "@/components/ui/Modal";
-import { CreatePost } from "@/components/posts/CreatePost";
+import { CreatePostFlow } from "@/components/posts/CreatePostFlow";
 
 export default function CreatePostModal() {
   const router = useRouter();
 
-  const handleCreate = (
+  const handleSubmitted = (
     content: string,
     mediaUrl: string | null,
     mediaType: "image" | "video" | null,
+    communityId: string,
   ) => {
-    // Mock only — see note below about why this can't push into the
-    // feed's own post list yet.
-    console.log("new post", { content, mediaUrl, mediaType });
+    console.log("new post", { content, mediaUrl, mediaType, communityId });
     router.back();
   };
 
   return (
     <Modal title="Create post">
-      <CreatePost onSubmit={handleCreate} bare />
+      <CreatePostFlow onSubmitted={handleSubmitted} bare />
     </Modal>
   );
 }

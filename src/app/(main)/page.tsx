@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { CreatePost } from "@/components/posts/CreatePost";
+import { CreatePostFlow } from "@/components/posts/CreatePostFlow";
 import { PostCard } from "@/components/posts/PostCard";
 import { mockPosts, mockCurrentUser } from "@/lib/mock/data";
 import type { Post } from "@/types";
@@ -9,16 +9,17 @@ import type { Post } from "@/types";
 export default function HomePage() {
   const [posts, setPosts] = useState<Post[]>(mockPosts);
 
-  const handleCreate = (
+  const handleSubmitted = (
     content: string,
     mediaUrl: string | null,
     mediaType: "image" | "video" | null,
+    communityId: string,
   ) => {
     const newPost: Post = {
       id: `post-${Date.now()}`,
       content,
       authorId: mockCurrentUser.id,
-      communityId: null,
+      communityId,
       mediaUrl,
       mediaType,
       upvotes: 0,
@@ -59,7 +60,7 @@ export default function HomePage() {
         </p>
       </div>
 
-      <CreatePost onSubmit={handleCreate} />
+      <CreatePostFlow onSubmitted={handleSubmitted} />
 
       <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
         {posts.map((post) => (
