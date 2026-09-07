@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useEditor, EditorContent } from "@tiptap/react";
 import StarterKit from "@tiptap/starter-kit";
 import Superscript from "@tiptap/extension-superscript";
@@ -38,6 +38,15 @@ const iconBtnStyle = {
   display: "flex",
 } as const;
 
+const editorExtensions = [
+  StarterKit.configure({
+    heading: { levels: [2, 3] },
+    link: { openOnClick: false, autolink: true },
+  }),
+  Superscript,
+  Placeholder.configure({ placeholder: "What's your vibe right now?" }),
+];
+
 export const CreatePost = ({
   communities,
   selectedCommunityId,
@@ -48,15 +57,13 @@ export const CreatePost = ({
   const [mediaPreview, setMediaPreview] = useState<string | null>(null);
   const [mediaType, setMediaType] = useState<"image" | "video" | null>(null);
   const [draftSaved, setDraftSaved] = useState(false);
+  const [textLength, setTextLength] = useState(0);
+
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [showCommunityWarning, setShowCommunityWarning] = useState(false);
 
   const editor = useEditor({
-    extensions: [
-      StarterKit.configure({ heading: { levels: [2, 3] } }),
-      Superscript,
-      Link.configure({ openOnClick: false, autolink: true }),
-      Placeholder.configure({ placeholder: "What's your vibe right now?" }),
-    ],
+    extensions: editorExtensions,
     content: "",
     // Next.js renders once on the server, then again on the client — if
     // TipTap tried to render immediately on both, the two could disagree
@@ -64,6 +71,7 @@ export const CreatePost = ({
     // the formatDistanceToNow issue you've hit before — the fix is telling
     // TipTap to wait and only render once the client has actually mounted.
     immediatelyRender: false,
+    shouldRerenderOnTransaction: true,
     editorProps: {
       attributes: {
         style:
@@ -72,10 +80,26 @@ export const CreatePost = ({
     },
   });
 
-  const textLength = editor?.getText().length ?? 0;
+  // Add useEffect - redenring input text
+  useEffect(() => {
+    if (!editor) return;
+
+    const updateTextLength = () => {
+      setTextLength(editor.getText().length);
+    };
+
+    editor.on("update", updateTextLength);
+
+    return () => {
+      editor.off("update", updateTextLength);
+    };
+  }, [editor]);
+
+  // const textLength = editor?.getText().length ?? 0;
   const remaining = 500 - textLength;
   const hasContent = textLength > 0;
-  const canSubmit = !!selectedCommunityId && hasContent && remaining >= 0;
+
+  const canSubmit = hasContent && remaining >= 0;
 
   const handleFilePick = (type: "image" | "video") => {
     if (!fileInputRef.current) return;
@@ -100,6 +124,10 @@ export const CreatePost = ({
 
   const handleSubmit = () => {
     if (!canSubmit || !editor) return;
+    if (!selectedCommunityId) {
+      setShowCommunityWarning(true);
+      return;
+    }
     onSubmit(editor.getHTML(), mediaPreview, mediaType);
     editor.commands.clearContent();
     removeMedia();
@@ -125,7 +153,7 @@ export const CreatePost = ({
           value={selectedCommunityId}
           onChange={onCommunityChange}
         />
-        {!selectedCommunityId && (
+        {showCommunityWarning && !selectedCommunityId && (
           <div
             style={{
               display: "flex",
@@ -145,8 +173,8 @@ export const CreatePost = ({
       <div style={{ display: "flex", gap: "12px" }}>
         <Avatar fallback={mockCurrentUser.displayName} size="md" pulse />
         <div style={{ flex: 1, minWidth: 0 }}>
-          <EditorToolbar editor={editor} />
           <EditorContent editor={editor} />
+          <EditorToolbar editor={editor} />
 
           {mediaPreview && (
             <div
@@ -215,11 +243,22 @@ export const CreatePost = ({
               justifyContent: "space-between",
               marginTop: "12px",
               paddingTop: "12px",
-              borderTop: "1px solid rgba(255,255,255,0.06)",
+              // borderTop: "1px solid rgba(255,255,255,0.06)",
+            }}
+          ></div>
+
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginTop: "12px",
+              paddingTop: "12px",
+              // borderTop: "1px solid rgba(255,255,255,0.06)",
             }}
           >
             <div style={{ display: "flex", gap: "4px", alignItems: "center" }}>
-              <button
+              {/* <button
                 onClick={() => handleFilePick("image")}
                 title="Add image"
                 style={iconBtnStyle}
@@ -241,7 +280,7 @@ export const CreatePost = ({
                 }}
               >
                 {remaining} left
-              </span>
+              </span> */}
               {draftSaved && (
                 <span
                   style={{
@@ -254,7 +293,7 @@ export const CreatePost = ({
                 </span>
               )}
             </div>
-            <div style={{ display: "flex", gap: "8px" }}>
+            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
               <Button
                 variant="secondary"
                 size="sm"
@@ -263,7 +302,22 @@ export const CreatePost = ({
               >
                 Save Draft
               </Button>
-              <Button onClick={handleSubmit} disabled={!canSubmit} size="sm">
+              <Button
+                onClick={handleSubmit}
+                disabled={!canSubmit}
+                size="sm"
+                style={{
+                  fontSize: "13px",
+                  fontWeight: 600,
+                  padding: "7px 16px",
+                  borderRadius: "9999px",
+                  border: "none",
+                  cursor: "pointer",
+                  background:
+                    "linear-gradient(135deg, #ff6b6b, #ff3d8b, #8b5cf6)",
+                  color: "white",
+                }}
+              >
                 Post
               </Button>
             </div>
