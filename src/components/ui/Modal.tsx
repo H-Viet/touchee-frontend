@@ -7,9 +7,10 @@ import { X } from "lucide-react";
 interface ModalProps {
   children: ReactNode;
   title?: string;
+  size?: "default" | "wide";
 }
 
-export const Modal = ({ children, title }: ModalProps) => {
+export const Modal = ({ children, title, size = "default" }: ModalProps) => {
   const router = useRouter();
 
   // router.back() is the key idea here — dismissing feels like "return to
@@ -44,7 +45,8 @@ export const Modal = ({ children, title }: ModalProps) => {
         onClick={(e) => e.stopPropagation()} // stop the backdrop's onClick from also firing
         style={{
           width: "100%",
-          maxWidth: "560px",
+          maxWidth: size === "wide" ? "880px" : "560px",
+          maxHeight: "calc(100vh - 80px)",
           background: "var(--color-surface)",
           border: "1px solid var(--color-border)",
           borderRadius: "var(--radius-lg)",
