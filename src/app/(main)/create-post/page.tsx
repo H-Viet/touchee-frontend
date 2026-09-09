@@ -8,6 +8,7 @@ export default function CreatePostPage() {
   const router = useRouter();
 
   const handleSubmitted = (
+    title: string | undefined,
     content: string,
     mediaUrl: string | null,
     mediaType: "image" | "video" | null,
