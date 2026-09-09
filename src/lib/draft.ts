@@ -1,46 +1,40 @@
-// Local-storage-backed post drafts. Once the backend supports drafts,
-// only the *insides* of these three functions need to change — every
-// call site (saveDraft/getDrafts/deleteDraft) stays exactly the same.
-
-const DRAFTS_KEY = "touchee:post-drafts";
+const CURRENT_DRAFT_KEY = "touchee:current-create-post-draft";
 
 export interface PostDraft {
-  id: string;
+  id: "current-create-post";
+  title: string;
   communityId: string | null;
-  content: string; // HTML from the rich text editor
-  mediaUrl: string | null;
-  mediaType: "image" | "video" | null;
+  content: string;
   savedAt: string;
 }
 
-function readAll(): PostDraft[] {
-  if (typeof window === "undefined") return [];
+export function getCurrentDraft(): PostDraft | null {
+  if (typeof window === "undefined") return null;
+
   try {
-    const raw = window.localStorage.getItem(DRAFTS_KEY);
-    return raw ? (JSON.parse(raw) as PostDraft[]) : [];
+    const raw = window.localStorage.getItem(CURRENT_DRAFT_KEY);
+    return raw ? (JSON.parse(raw) as PostDraft) : null;
   } catch {
-    return [];
+    return null;
   }
 }
 
-function writeAll(drafts: PostDraft[]) {
-  window.localStorage.setItem(DRAFTS_KEY, JSON.stringify(drafts));
-}
-
-export function getDrafts(): PostDraft[] {
-  return readAll();
-}
-
-export function saveDraft(draft: Omit<PostDraft, "id" | "savedAt">): PostDraft {
-  const newDraft: PostDraft = {
+export function saveCurrentDraft(
+  draft: Omit<PostDraft, "id" | "savedAt">,
+): PostDraft {
+  const savedDraft: PostDraft = {
     ...draft,
-    id: `draft-${Date.now()}`,
+    id: "current-create-post",
     savedAt: new Date().toISOString(),
   };
-  writeAll([newDraft, ...readAll()]);
-  return newDraft;
+
+  window.localStorage.setItem(CURRENT_DRAFT_KEY, JSON.stringify(savedDraft));
+
+  return savedDraft;
 }
 
-export function deleteDraft(id: string): void {
-  writeAll(readAll().filter((d) => d.id !== id));
+export function clearCurrentDraft(): void {
+  if (typeof window === "undefined") return;
+
+  window.localStorage.removeItem(CURRENT_DRAFT_KEY);
 }
