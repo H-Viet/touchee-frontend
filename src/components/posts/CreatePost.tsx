@@ -12,7 +12,11 @@ import { Avatar } from "@/components/ui/Avatar";
 import { Button } from "@/components/ui/Button";
 import { CommunitySelectDropdown } from "../communities/CommunitySelectDropdown";
 import { EditorToolbar } from "@/components/posts/EditorToolbar";
-import { saveDraft } from "@/lib/draft";
+import {
+  clearCurrentDraft,
+  getCurrentDraft,
+  saveCurrentDraft,
+} from "@/lib/draft";
 import { mockCurrentUser } from "@/lib/mock/data";
 import type { Community } from "@/types";
 
@@ -62,6 +66,9 @@ export const CreatePost = ({
   const [title, setTitle] = useState("");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const restoredDraftRef = useRef(false);
+
   const [showCommunityWarning, setShowCommunityWarning] = useState(false);
 
   const editor = useEditor({
@@ -98,11 +105,33 @@ export const CreatePost = ({
     };
   }, [editor]);
 
+  // Save draft -> restored title state, selected community, TipTap body text
+  useEffect(() => {
+    if (!editor || restoredDraftRef.current) return;
+
+    restoredDraftRef.current = true;
+
+    const draft = getCurrentDraft();
+    if (!draft) return;
+
+    setTitle(draft.title);
+
+    if (draft.communityId) {
+      onCommunityChange(draft.communityId);
+    }
+
+    editor.commands.setContent(draft.content, {
+      emitUpdate: true,
+    });
+  }, [editor, onCommunityChange]);
+
   // const textLength = editor?.getText().length ?? 0;
   const remaining = 500 - textLength;
   const hasContent = textLength > 0;
 
-  const canSubmit = hasContent && remaining >= 0;
+  const hasTitle = title.trim().length > 0;
+  const hasDraftContent = hasTitle || hasContent;
+  const canSubmit = hasTitle && hasContent && remaining >= 0;
 
   const handleFilePick = (type: "image" | "video") => {
     if (!fileInputRef.current) return;
@@ -132,19 +161,27 @@ export const CreatePost = ({
       return;
     }
     onSubmit(title.trim(), editor.getHTML(), mediaPreview, mediaType);
+
+    // Update save draft -> persist locally even after close modal -> draft saved still remained -> reopen modal -> draft restores -> after posted -> drafts cleared
+    clearCurrentDraft();
+    setTitle("");
+    editor.commands.clearContent();
+    removeMedia();
+
     setTitle("");
     editor.commands.clearContent();
     removeMedia();
   };
 
   const handleSaveDraft = () => {
-    if (!editor || !hasContent) return;
-    saveDraft({
+    if (!editor || !hasDraftContent) return;
+
+    saveCurrentDraft({
+      title: title.trim(),
       communityId: selectedCommunityId,
       content: editor.getHTML(),
-      mediaUrl: mediaPreview,
-      mediaType,
     });
+
     setDraftSaved(true);
     setTimeout(() => setDraftSaved(false), 2000);
   };
@@ -387,7 +424,7 @@ export const CreatePost = ({
               variant="secondary"
               size="sm"
               onClick={handleSaveDraft}
-              disabled={!hasContent}
+              disabled={!hasDraftContent}
               style={{
                 fontSize: "13px",
                 fontWeight: 600,
