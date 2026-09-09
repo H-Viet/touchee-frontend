@@ -7,6 +7,7 @@ import { mockJoinedCommunities } from "@/lib/mock/data";
 
 interface CreatePostFlowProps {
   onSubmitted: (
+    title: string,
     content: string,
     mediaUrl: string | null,
     mediaType: "image" | "video" | null,
@@ -24,11 +25,12 @@ export const CreatePostFlow = ({ onSubmitted, bare }: CreatePostFlowProps) => {
     mockJoinedCommunities.find((c) => c.id === selectedCommunityId) ?? null;
 
   const handleCreate = (
+    title: string,
     content: string,
     mediaUrl: string | null,
     mediaType: "image" | "video" | null,
   ) => {
-    onSubmitted(content, mediaUrl, mediaType, selectedCommunityId!);
+    onSubmitted(title, content, mediaUrl, mediaType, selectedCommunityId!);
   };
 
   return (
