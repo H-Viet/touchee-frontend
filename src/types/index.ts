@@ -45,6 +45,7 @@ export interface Me {
 
 export interface Post {
   id: string;
+  title?: string;
   content: string;
   authorId: string;
   communityId: string | null;
@@ -59,6 +60,7 @@ export interface Post {
 }
 
 export interface CreatePostDto {
+  title?: string;
   content: string;
   communityId?: string;
   mediaUrl?: string;
