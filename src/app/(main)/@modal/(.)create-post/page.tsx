@@ -8,17 +8,25 @@ export default function CreatePostModal() {
   const router = useRouter();
 
   const handleSubmitted = (
+    title: string,
     content: string,
     mediaUrl: string | null,
     mediaType: "image" | "video" | null,
     communityId: string,
   ) => {
-    console.log("new post", { content, mediaUrl, mediaType, communityId });
+    console.log("new post", {
+      title,
+      content,
+      mediaUrl,
+      mediaType,
+      communityId,
+    });
+
     router.back();
   };
 
   return (
-    <Modal title="Create post">
+    <Modal title="Create post" size="wide">
       <CreatePostFlow onSubmitted={handleSubmitted} bare />
     </Modal>
   );
