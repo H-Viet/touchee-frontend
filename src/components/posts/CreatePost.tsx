@@ -21,6 +21,7 @@ interface CreatePostProps {
   selectedCommunityId: string | null;
   onCommunityChange: (communityId: string) => void;
   onSubmit: (
+    title: string,
     content: string,
     mediaUrl: string | null,
     mediaType: "image" | "video" | null,
@@ -58,6 +59,7 @@ export const CreatePost = ({
   const [mediaType, setMediaType] = useState<"image" | "video" | null>(null);
   const [draftSaved, setDraftSaved] = useState(false);
   const [textLength, setTextLength] = useState(0);
+  const [title, setTitle] = useState("");
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [showCommunityWarning, setShowCommunityWarning] = useState(false);
@@ -74,6 +76,7 @@ export const CreatePost = ({
     shouldRerenderOnTransaction: true,
     editorProps: {
       attributes: {
+        class: "post-editor",
         style:
           "outline: none; font-size: 14px; line-height: 1.6; color: var(--color-text-primary); min-height: 72px;",
       },
@@ -128,7 +131,8 @@ export const CreatePost = ({
       setShowCommunityWarning(true);
       return;
     }
-    onSubmit(editor.getHTML(), mediaPreview, mediaType);
+    onSubmit(title.trim(), editor.getHTML(), mediaPreview, mediaType);
+    setTitle("");
     editor.commands.clearContent();
     removeMedia();
   };
@@ -146,7 +150,7 @@ export const CreatePost = ({
   };
 
   const formContent = (
-    <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+    <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
       <div>
         <CommunitySelectDropdown
           communities={communities}
@@ -170,12 +174,113 @@ export const CreatePost = ({
         )}
       </div>
 
-      <div style={{ display: "flex", gap: "12px" }}>
-        <Avatar fallback={mockCurrentUser.displayName} size="md" pulse />
-        <div style={{ flex: 1, minWidth: 0 }}>
-          <EditorContent editor={editor} />
-          <EditorToolbar editor={editor} />
+      <div>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "7px",
+          }}
+        >
+          <label
+            htmlFor="post-title"
+            style={{
+              color: "var(--color-text-secondary)",
+              fontSize: "12px",
+              fontWeight: 700,
+              letterSpacing: "0.04em",
+              textTransform: "uppercase",
+            }}
+          >
+            Title
+            <span
+              aria-hidden="true"
+              style={{
+                marginLeft: "4px",
+                color: "var(--color-error)",
+              }}
+            >
+              *
+            </span>
+            <span className="sr-only">required</span>
+          </label>
+          <span style={{ fontSize: "12px", color: "var(--color-text-muted)" }}>
+            {title.length}/300
+          </span>
+        </div>
 
+        <input
+          id="post-title"
+          type="text"
+          value={title}
+          onChange={(event) => setTitle(event.target.value)}
+          maxLength={300}
+          placeholder="e.g. The little things that made today better"
+          style={{
+            width: "100%",
+            padding: "14px 16px",
+            borderRadius: "12px",
+            border: "1px solid var(--color-border)",
+            background: "rgba(15, 13, 15, 0.45)",
+            color: "var(--color-text-primary)",
+            fontSize: "16px",
+            fontWeight: 650,
+            outline: "none",
+            transition: "border-color 0.2s ease, box-shadow 0.2s ease",
+          }}
+        />
+      </div>
+
+      <label
+        htmlFor="post-title"
+        style={{
+          color: "var(--color-text-secondary)",
+          fontSize: "12px",
+          fontWeight: 700,
+          letterSpacing: "0.04em",
+          textTransform: "uppercase",
+        }}
+      >
+        Body content
+        <span className="sr-only">required</span>
+      </label>
+      <div style={{ display: "flex", gap: "12px", alignItems: "flex-start" }}>
+        <div
+          style={{
+            flex: 1,
+            minWidth: 0,
+            borderRadius: "12px",
+            border: "1px solid rgba(255,255,255,0.07)",
+            background: "rgba(15, 13, 15, 0.28)",
+            overflow: "hidden",
+          }}
+        >
+          <div
+            style={{
+              position: "relative",
+              padding: "14px 16px 8px",
+            }}
+          >
+            {!hasContent && (
+              <span
+                aria-hidden="true"
+                style={{
+                  position: "absolute",
+                  top: "14px",
+                  left: "16px",
+                  color: "var(--color-text-muted)",
+                  fontSize: "14px",
+                  lineHeight: 1.6,
+                  pointerEvents: "none",
+                }}
+              >
+                Share your vibe, story, or thought...
+              </span>
+            )}
+
+            <EditorContent editor={editor} />
+          </div>
           {mediaPreview && (
             <div
               style={{
@@ -228,14 +333,12 @@ export const CreatePost = ({
               )}
             </div>
           )}
-
           <input
             ref={fileInputRef}
             type="file"
             style={{ display: "none" }}
             onChange={handleFileChange}
           />
-
           <div
             style={{
               display: "flex",
@@ -243,84 +346,80 @@ export const CreatePost = ({
               justifyContent: "space-between",
               marginTop: "12px",
               paddingTop: "12px",
-              // borderTop: "1px solid rgba(255,255,255,0.06)",
+              borderTop: "1px solid rgba(255,255,255,0.06)",
             }}
           ></div>
-
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginTop: "12px",
-              paddingTop: "12px",
-              // borderTop: "1px solid rgba(255,255,255,0.06)",
-            }}
-          >
-            <div style={{ display: "flex", gap: "4px", alignItems: "center" }}>
-              {/* <button
-                onClick={() => handleFilePick("image")}
-                title="Add image"
-                style={iconBtnStyle}
-              >
-                <ImageIcon size={18} />
-              </button>
-              <button
-                onClick={() => handleFilePick("video")}
-                title="Add video"
-                style={iconBtnStyle}
-              >
-                <Video size={18} />
-              </button>
+          <div style={{ display: "flex", gap: "4px", alignItems: "center" }}>
+            {draftSaved && (
               <span
                 style={{
                   fontSize: "12px",
-                  color: "var(--color-text-muted)",
+                  color: "var(--color-primary)",
                   marginLeft: "8px",
                 }}
               >
-                {remaining} left
-              </span> */}
-              {draftSaved && (
-                <span
-                  style={{
-                    fontSize: "12px",
-                    color: "var(--color-primary)",
-                    marginLeft: "8px",
-                  }}
-                >
-                  Draft saved
-                </span>
-              )}
-            </div>
-            <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
-              <Button
-                variant="secondary"
-                size="sm"
-                onClick={handleSaveDraft}
-                disabled={!hasContent}
-              >
-                Save Draft
-              </Button>
-              <Button
-                onClick={handleSubmit}
-                disabled={!canSubmit}
-                size="sm"
-                style={{
-                  fontSize: "13px",
-                  fontWeight: 600,
-                  padding: "7px 16px",
-                  borderRadius: "9999px",
-                  border: "none",
-                  cursor: "pointer",
-                  background:
-                    "linear-gradient(135deg, #ff6b6b, #ff3d8b, #8b5cf6)",
-                  color: "white",
-                }}
-              >
-                Post
-              </Button>
-            </div>
+                Draft saved
+              </span>
+            )}
+          </div>
+
+          {/* Editor tool bar */}
+          <div style={{ padding: "0 12px", overflowX: "auto" }}>
+            <EditorToolbar
+              editor={editor}
+              mediaType={mediaType}
+              onPickMedia={handleFilePick}
+            />
+          </div>
+
+          {/* Buttons section */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "flex-end",
+              alignItems: "center",
+              gap: "8px",
+              marginTop: "8px",
+              padding: "14px 16px 16px",
+            }}
+          >
+            <Button
+              variant="secondary"
+              size="sm"
+              onClick={handleSaveDraft}
+              disabled={!hasContent}
+              style={{
+                fontSize: "13px",
+                fontWeight: 600,
+                padding: "7px 16px",
+                borderRadius: "9999px",
+                border: "none",
+                cursor: "pointer",
+                background: "rgba(255,255,255,0.06)",
+                color: "var(--color-text-secondary)",
+              }}
+            >
+              Save Draft
+            </Button>
+
+            <Button
+              onClick={handleSubmit}
+              disabled={!canSubmit}
+              size="sm"
+              style={{
+                fontSize: "13px",
+                fontWeight: 600,
+                padding: "7px 16px",
+                borderRadius: "9999px",
+                border: "none",
+                cursor: "pointer",
+                background:
+                  "linear-gradient(135deg, #ff6b6b, #ff3d8b, #8b5cf6)",
+                color: "white",
+              }}
+            >
+              Post
+            </Button>
           </div>
         </div>
       </div>
@@ -330,6 +429,17 @@ export const CreatePost = ({
   return bare ? (
     formContent
   ) : (
-    <Card style={{ marginBottom: "24px" }}>{formContent}</Card>
+    <Card
+      style={{
+        marginBottom: "24px",
+        padding: "24px",
+        background:
+          "linear-gradient(145deg, rgba(35, 27, 44, 0.82), rgba(24, 19, 30, 0.72))",
+        border: "1px solid rgba(192, 132, 252, 0.16)",
+        boxShadow: "0 18px 50px rgba(0, 0, 0, 0.2)",
+      }}
+    >
+      {formContent}
+    </Card>
   );
 };
