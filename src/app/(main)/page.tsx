@@ -10,6 +10,7 @@ export default function HomePage() {
   const [posts, setPosts] = useState<Post[]>(mockPosts);
 
   const handleSubmitted = (
+    title: string,
     content: string,
     mediaUrl: string | null,
     mediaType: "image" | "video" | null,
@@ -17,6 +18,7 @@ export default function HomePage() {
   ) => {
     const newPost: Post = {
       id: `post-${Date.now()}`,
+      title: title || undefined,
       content,
       authorId: mockCurrentUser.id,
       communityId,
