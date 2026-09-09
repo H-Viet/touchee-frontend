@@ -76,3 +76,16 @@ body {
 .mood-pulse {
   animation: mood-pulse 2.4s ease-in-out infinite;
 }
+
+.post-editor .ProseMirror {
+  min-height: 110px;
+  outline: none;
+}
+
+.post-editor p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  color: var(--color-text-muted);
+  float: left;
+  height: 0;
+  pointer-events: none;
+}
