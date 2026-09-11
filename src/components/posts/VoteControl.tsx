@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowBigUp, ArrowBigDown } from "lucide-react";
+import { ArrowBigDown, ArrowBigUp } from "lucide-react";
 
 interface VoteControlProps {
   score: number;
@@ -18,34 +18,46 @@ export const VoteControl = ({
 
   const displayScore =
     baseScore + (vote === "up" ? 1 : vote === "down" ? -1 : 0);
-  const iconSize = size === "sm" ? 16 : 20;
-  const fontSize = size === "sm" ? "12px" : "13px";
 
-  const handleVote = (dir: "up" | "down", e: React.MouseEvent) => {
-    // Prevents clicks here from also triggering a parent <Link> navigation
-    e.preventDefault();
-    e.stopPropagation();
-    setVote((prev) => (prev === dir ? null : dir));
+  const iconSize = size === "sm" ? 16 : 18;
+  const fontSize = size === "sm" ? "13px" : "14px";
+  const isHorizontal = orientation === "horizontal";
+
+  const handleVote = (direction: "up" | "down", event: React.MouseEvent) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    setVote((previous) => (previous === direction ? null : direction));
   };
 
   return (
     <div
+      aria-label="Vote controls"
       style={{
         display: "flex",
-        flexDirection: orientation === "horizontal" ? "row" : "column",
+        flexDirection: isHorizontal ? "row" : "column",
         alignItems: "center",
-        gap: orientation === "horizontal" ? "4px" : "2px",
+        gap: isHorizontal ? "2px" : "2px",
+        padding: isHorizontal ? "4px 6px" : 0,
+        borderRadius: isHorizontal ? "9999px" : 0,
+        background: isHorizontal ? "rgba(255,255,255,0.06)" : "transparent",
       }}
     >
       <button
-        onClick={(e) => handleVote("up", e)}
+        type="button"
+        onClick={(event) => handleVote("up", event)}
+        aria-label="Upvote"
+        aria-pressed={vote === "up"}
         style={{
           background: "none",
           border: "none",
           cursor: "pointer",
-          padding: "2px",
+          padding: "4px",
           display: "flex",
-          color: vote === "up" ? "#ff3d8b" : "var(--color-text-muted)",
+          color:
+            vote === "up"
+              ? "var(--color-primary)"
+              : "var(--color-text-secondary)",
         }}
       >
         <ArrowBigUp size={iconSize} strokeWidth={vote === "up" ? 3 : 2} />
@@ -53,28 +65,36 @@ export const VoteControl = ({
 
       <span
         style={{
+          minWidth: "24px",
+          textAlign: "center",
           fontSize,
           fontWeight: 700,
           color:
             vote === "up"
-              ? "#ff3d8b"
+              ? "var(--color-primary)"
               : vote === "down"
-                ? "#8b5cf6"
-                : "var(--color-text-secondary)",
+                ? "var(--color-accent)"
+                : "var(--color-text-primary)",
         }}
       >
         {displayScore}
       </span>
 
       <button
-        onClick={(e) => handleVote("down", e)}
+        type="button"
+        onClick={(event) => handleVote("down", event)}
+        aria-label="Downvote"
+        aria-pressed={vote === "down"}
         style={{
           background: "none",
           border: "none",
           cursor: "pointer",
-          padding: "2px",
+          padding: "4px",
           display: "flex",
-          color: vote === "down" ? "#8b5cf6" : "var(--color-text-muted)",
+          color:
+            vote === "down"
+              ? "var(--color-accent)"
+              : "var(--color-text-secondary)",
         }}
       >
         <ArrowBigDown size={iconSize} strokeWidth={vote === "down" ? 3 : 2} />
