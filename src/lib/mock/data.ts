@@ -35,9 +35,40 @@ export const mockUsers: User[] = [
 
 export const mockCurrentUser: User = mockUsers[0];
 
+export const mockJoinedCommunities: Community[] = [
+  {
+    id: "comm-1",
+    name: "Rainy Day Vibes",
+    slug: "rainy-day-vibes",
+    description: "For people who love the sound of rain",
+    type: "PUBLIC",
+    createdAt: "2025-10-01T00:00:00.000Z",
+    _count: { members: 1240, posts: 89 },
+  },
+  {
+    id: "comm-2",
+    name: "Night Owls",
+    slug: "night-owls",
+    description: "3am thoughts and late night energy",
+    type: "PUBLIC",
+    createdAt: "2025-10-01T00:00:00.000Z",
+    _count: { members: 682, posts: 45 },
+  },
+  {
+    id: "comm-3",
+    name: "Cozy Corner",
+    slug: "cozy-corner",
+    description: "Reading nooks, warm drinks, soft blankets",
+    type: "RESTRICTED",
+    createdAt: "2025-10-01T00:00:00.000Z",
+    _count: { members: 331, posts: 22 },
+  },
+];
+
 export const mockPosts: Post[] = [
   {
     id: "post-1",
+    title: "Found someone who loves rainy-day playlists too",
     content:
       "Just matched with someone who's also obsessed with lo-fi and rainy days 🌧️ Touchee really gets me.",
     authorId: "user-2",
@@ -53,6 +84,7 @@ export const mockPosts: Post[] = [
   },
   {
     id: "post-2",
+    title: "Autumn sunset from my rooftop",
     content:
       "Sunset from my rooftop today. Autumn hits different this year!!! 🍂",
     authorId: "user-3",
@@ -68,6 +100,7 @@ export const mockPosts: Post[] = [
   },
   {
     id: "post-3",
+    title: "My little reading corner is finally complete",
     content:
       "Finally finished setting up my little reading corner. Golden lamp, cold coffee, warm playlist. This is peace.",
     authorId: "user-1",
@@ -281,36 +314,6 @@ export const mockComments: Comment[] = [
     downvotes: 1,
     author: mockUsers[2],
     replies: [],
-  },
-];
-
-export const mockJoinedCommunities: Community[] = [
-  {
-    id: "comm-1",
-    name: "Rainy Day Vibes",
-    slug: "rainy-day-vibes",
-    description: "For people who love the sound of rain",
-    type: "PUBLIC",
-    createdAt: "2025-10-01T00:00:00.000Z",
-    _count: { members: 1240, posts: 89 },
-  },
-  {
-    id: "comm-2",
-    name: "Night Owls",
-    slug: "night-owls",
-    description: "3am thoughts and late night energy",
-    type: "PUBLIC",
-    createdAt: "2025-10-01T00:00:00.000Z",
-    _count: { members: 682, posts: 45 },
-  },
-  {
-    id: "comm-3",
-    name: "Cozy Corner",
-    slug: "cozy-corner",
-    description: "Reading nooks, warm drinks, soft blankets",
-    type: "RESTRICTED",
-    createdAt: "2025-10-01T00:00:00.000Z",
-    _count: { members: 331, posts: 22 },
   },
 ];
 
