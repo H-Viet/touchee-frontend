@@ -3,7 +3,11 @@
 import { useState } from "react";
 import { CreatePostFlow } from "@/components/posts/CreatePostFlow";
 import { PostCard } from "@/components/posts/PostCard";
-import { mockPosts, mockCurrentUser } from "@/lib/mock/data";
+import {
+  mockPosts,
+  mockCurrentUser,
+  mockJoinedCommunities,
+} from "@/lib/mock/data";
 import type { Post } from "@/types";
 
 export default function HomePage() {
@@ -16,12 +20,16 @@ export default function HomePage() {
     mediaType: "image" | "video" | null,
     communityId: string,
   ) => {
+    const community =
+      mockJoinedCommunities.find((item) => item.id === communityId) ?? null;
+
     const newPost: Post = {
       id: `post-${Date.now()}`,
-      title: title || undefined,
+      title,
+      communityId,
+      community: community ?? undefined,
       content,
       authorId: mockCurrentUser.id,
-      communityId,
       mediaUrl,
       mediaType,
       upvotes: 0,
