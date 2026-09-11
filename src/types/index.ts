@@ -45,10 +45,11 @@ export interface Me {
 
 export interface Post {
   id: string;
-  title?: string;
+  title: string;
   content: string;
   authorId: string;
   communityId: string | null;
+  community?: Community;
   mediaUrl: string | null;
   mediaType: "image" | "video" | null;
   upvotes: number;
@@ -60,7 +61,7 @@ export interface Post {
 }
 
 export interface CreatePostDto {
-  title?: string;
+  title: string;
   content: string;
   communityId?: string;
   mediaUrl?: string;
