@@ -100,6 +100,8 @@ export interface Community {
   slug: string;
   description: string | null;
   type: CommunityType;
+  topic?: string;
+  isMature?: boolean;
   createdAt: string;
   _count?: {
     members: number;
@@ -113,6 +115,8 @@ export interface CreateCommunityDto {
   slug: string;
   description?: string;
   type: CommunityType;
+  topic: string;
+  isMature: boolean;
 }
 
 // ─── Shared ──────────────────────────────────────────────────────────────────
