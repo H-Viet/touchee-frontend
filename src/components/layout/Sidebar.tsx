@@ -76,7 +76,7 @@ export const Sidebar = () => {
 
       {/* Start a community */}
       <Link
-        href="/communities"
+        href="/communities/create"
         style={{
           display: "flex",
           alignItems: "center",
@@ -170,7 +170,7 @@ export const Sidebar = () => {
             {mockJoinedCommunities.map((c) => (
               <Link
                 key={c.id}
-                href={`/communities/${c.slug}`}
+                href={`/communities/create`}
                 style={{
                   display: "flex",
                   alignItems: "center",
